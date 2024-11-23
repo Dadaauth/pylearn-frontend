@@ -1,7 +1,6 @@
 "use client"
 import { useState } from "react";
 import { Input, Card, CardHeader, CardBody, CardFooter, Button } from "@nextui-org/react";
-import { env } from "process";
 
 export default function SignUpCard() {
     const [formDetails, setFormDetails] = useState({
