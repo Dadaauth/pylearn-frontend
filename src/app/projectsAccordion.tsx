@@ -65,7 +65,7 @@ export default function ProjectsAccordion() {
 }
 async function fetchProjects() {
     try {
-        let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/fetch?q=id,title,description`);
+        let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/fetch/all?q=id,title,description`);
         if (res.ok) {
             let data = (await res.json()).data
             return data;
