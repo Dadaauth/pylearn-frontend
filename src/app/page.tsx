@@ -6,7 +6,6 @@ export default function Home() {
     <>
       <AppNavBar />
       <div className="mx-6">
-        <p>Welcome Clement,</p>
         <ProjectsAccordion />
       </div>
     </>

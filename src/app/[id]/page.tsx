@@ -49,7 +49,6 @@ export default function Page({
         <>
             <AppNavBar />
             <div className="mx-6">
-                <p>Welcome Clement,</p>
                 <div className="my-6">
                     <h3 className="text-lg">Project Title: {project.title} {projectCompleted && <DoneAll color="success"/>}</h3>
                     <div className="my-4 max-[767px]:prose prose-lg dark:prose-invert" dangerouslySetInnerHTML={{ __html: markDownHTML }}/>
