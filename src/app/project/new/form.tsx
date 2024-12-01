@@ -1,16 +1,21 @@
 "use client"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Input, Textarea } from "@nextui-org/react";
 import { remark } from "remark";
 import html from 'remark-html';
 
-export default function Form() {
+// @ts-ignore
+export default function Form({endpoint, method="POST", loading=false, title="", description="", content=""}) {
     const [projectDetails, setProjectDetails] = useState({
         "title": "",
         "description": "",
         "content": "",
     })
     const [markdownContent, setMarkdownContent] = useState("");
+
+    useEffect(() => {
+        if (!loading) {setProjectDetails({title, description, content})}
+    }, [loading])
 
     async function setMarkdownPreview(value: String) {
         // Convert MarkDown to HTML for preview
@@ -30,7 +35,7 @@ export default function Form() {
         })
     }
 
-    function submitFormHandler() {submitForm(projectDetails)}
+    function submitFormHandler() {submitForm(projectDetails, endpoint, method)}
     return (
         <div className="my-6 flex justify-center gap-4">
             <div className="flex flex-col gap-4 w-96">
@@ -38,6 +43,7 @@ export default function Form() {
                     type="text"
                     name="title"
                     label="Project Title"
+                    value={projectDetails.title}
                     required={true}
                     onChange={handleInputChange}
                 />
@@ -45,6 +51,7 @@ export default function Form() {
                     type="text"
                     name="description"
                     label="Short Description"
+                    value={projectDetails.description}
                     required={true}
                     onChange={handleInputChange}
                 />
@@ -52,6 +59,7 @@ export default function Form() {
                 <Textarea
                     name="content"
                     label="Project Content (in markdown)"
+                    value={projectDetails.content}
                     required={true}
                     onChange={handleInputChange}
                 />
@@ -62,21 +70,21 @@ export default function Form() {
 }
 
 // @ts-ignore
-async function submitForm(projectDetails) {
+async function submitForm(projectDetails, endpoint, method) {
     console.log(projectDetails);
     for (let detail in projectDetails) {
         if (projectDetails[detail] == "") return
     }
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/create`, {
-            method: "POST",
+        const res = await fetch(endpoint, {
+            method: method,
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({...projectDetails}),
         });
 
-        if (res.ok && res.status == 201) console.log("Project Added Successfully!");
+        if (res.ok) console.log("Operation Successfull!");
         else console.log("Error occurred!!!");
     } catch (e) {
         console.log("Error occurred!!!");

@@ -1,14 +1,16 @@
 "use client"
 import { useState } from "react";
 import { Input, Card, CardHeader, CardBody, CardFooter, Button } from "@nextui-org/react";
-import Cookies from "js-cookies";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 export default function SignInCard() {
     const [formDetails, setFormDetails] = useState({
         "email": "",
         "password": "",
         "role": "",
-    })
+    });
+    const router = useRouter();
 
     // @ts-ignore
     function handleInputChange(e) {
@@ -22,7 +24,6 @@ export default function SignInCard() {
     type Details = "email" | "password" | "role"
     // @ts-ignore
     async function submitForm(e) {
-        console.log(formDetails);
         let detail: Details
         for (detail in formDetails) {
             if (formDetails[detail] == "") return
@@ -41,10 +42,9 @@ export default function SignInCard() {
                 // Store tokens and role in cookie
                 let data = (await res.json()).data
                 for (let key in data) {
-                    // TODO: There is a problem when setting the cookie here. !!!!!
-                    // The cookie only sets for the /auth path. It is not available on any other path
-                    Cookies.setItem(key, data[key])
+                    Cookies.set(key, data[key])
                 }
+                router.push("/")
             } else console.log("Error occurred!!!");
         } catch (e) {
             console.log("Error occurred!!!");

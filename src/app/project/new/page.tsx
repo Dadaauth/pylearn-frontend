@@ -7,7 +7,7 @@ export default function Page() {
             <AppNavBar />
             <div className="mx-6">
                 <h3>Create a new Project</h3>
-                <Form />
+                <Form endpoint={`${process.env.NEXT_PUBLIC_API_URL_V1}/project/create`}/>
             </div>
         </>
     );
