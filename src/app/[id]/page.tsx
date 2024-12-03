@@ -6,6 +6,7 @@ import html from 'remark-html';
 import { Button } from "@nextui-org/react";
 import { RemoveDone, DoneAll } from "@mui/icons-material";
 import AppNavBar from "@/components/ui/navbar";
+import ProtectedRoute from "@/components/utils/protected";
 
 export default function Page({
     params,
@@ -48,14 +49,16 @@ export default function Page({
     return (
         <>
             <AppNavBar />
-            <div className="mx-6">
-                <div className="my-6">
-                    <h3 className="text-lg">Project Title: {project.title} {projectCompleted && <DoneAll color="success"/>}</h3>
-                    <div className="my-4 max-[767px]:prose prose-lg dark:prose-invert" dangerouslySetInnerHTML={{ __html: markDownHTML }}/>
-                    {projectCompleted ? <Button onPress={handleProjectStatusUpdate} color="success"> <RemoveDone color="error"/> Mark As Pending</Button>:
-                    <Button onPress={handleProjectStatusUpdate} color="success"><DoneAll />Mark As Done</Button>}
+            <ProtectedRoute>
+                <div className="mx-6">
+                    <div className="my-6">
+                        <h3 className="text-lg">Project Title: {project.title} {projectCompleted && <DoneAll color="success"/>}</h3>
+                        <div className="my-4 max-[767px]:prose prose-lg dark:prose-invert" dangerouslySetInnerHTML={{ __html: markDownHTML }}/>
+                        {projectCompleted ? <Button onPress={handleProjectStatusUpdate} color="success"> <RemoveDone color="error"/> Mark As Pending</Button>:
+                        <Button onPress={handleProjectStatusUpdate} color="success"><DoneAll />Mark As Done</Button>}
+                    </div>
                 </div>
-            </div>
+            </ProtectedRoute>
         </>
     );
 }
