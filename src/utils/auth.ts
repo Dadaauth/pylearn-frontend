@@ -74,7 +74,8 @@ export async function fetch_basic_user_details() {
     const first_name = (await cookies()).get("first_name")?.value;
     const last_name = (await cookies()).get("last_name")?.value;
     const role = (await cookies()).get("role")?.value;
-    return {email, first_name, last_name, role}
+    const user_id = (await cookies()).get("user_id")?.value;
+    return {email, first_name, last_name, role, user_id}
 }
 
 export async function checkUserRole(user_id: String) {
