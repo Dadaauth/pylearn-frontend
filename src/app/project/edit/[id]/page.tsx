@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import AppNavBar from "@/components/ui/navbar";
 import Form from "../../new/form";
+import ProtectedAdmin from "@/components/utils/ProtectedAdmin";
 
 export default function Page({
     params,
@@ -39,17 +40,19 @@ export default function Page({
     return (
         <>
             <AppNavBar />
-            <div className="mx-6">
-                <h3>Edit a Project</h3>
-                <Form
-                    endpoint={`${process.env.NEXT_PUBLIC_API_URL_V1}/project/edit/${p_id}`}
-                    method="PATCH"
-                    loading={loading}
-                    title={project.title}
-                    description={project.description}
-                    content={project.content}
-                />
-            </div>
+            <ProtectedAdmin>
+                <div className="mx-6">
+                    <h3>Edit a Project</h3>
+                    <Form
+                        endpoint={`${process.env.NEXT_PUBLIC_API_URL_V1}/project/edit/${p_id}`}
+                        method="PATCH"
+                        loading={loading}
+                        title={project.title}
+                        description={project.description}
+                        content={project.content}
+                    />
+                </div>
+            </ProtectedAdmin>
         </>
     );
 }
