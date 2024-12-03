@@ -1,8 +1,8 @@
 "use client"
 import { useState } from "react";
 import { Input, Card, CardHeader, CardBody, CardFooter, Button } from "@nextui-org/react";
-import Cookies from "js-cookie";
-import { useRouter } from "next/navigation";
+
+import { signIn } from "@/utils/auth";
 
 export default function SignInCard() {
     const [formDetails, setFormDetails] = useState({
@@ -10,7 +10,6 @@ export default function SignInCard() {
         "password": "",
         "role": "",
     });
-    const router = useRouter();
 
     // @ts-ignore
     function handleInputChange(e) {
@@ -28,28 +27,9 @@ export default function SignInCard() {
         for (detail in formDetails) {
             if (formDetails[detail] == "") return
         }
-        try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/auth/login`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({...formDetails}),
-            });
-    
-            if (res.ok) {
-                console.log("Login Successful");
-                // Store tokens and role in cookie
-                let data = (await res.json()).data
-                for (let key in data) {
-                    Cookies.set(key, data[key])
-                }
-                router.push("/")
-            } else console.log("Error occurred!!!");
-        } catch (e) {
-            console.log("Error occurred!!!");
-        }
+        await signIn(formDetails);
     }
+
     return (
         <div className="flex justify-center items-center">
             <Card className="w-96">
