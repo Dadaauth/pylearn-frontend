@@ -1,13 +1,16 @@
 import AppNavBar from "@/components/ui/navbar";
 import ProjectsAccordion from "./projectsAccordion";
+import ProtectedRoute from "@/components/utils/protected";
 
 export default function Home() {
   return (
     <>
       <AppNavBar />
-      <div className="mx-6">
-        <ProjectsAccordion />
-      </div>
+      <ProtectedRoute>
+        <div className="mx-6">
+          <ProjectsAccordion />
+        </div>
+      </ProtectedRoute>
     </>
   );
 }
