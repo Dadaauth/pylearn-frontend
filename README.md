@@ -11,3 +11,4 @@
 
 ## TODO
 
+* Implement Mark as done functionality for projects based on a particular user
