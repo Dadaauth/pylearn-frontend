@@ -79,11 +79,22 @@ export async function fetch_basic_user_details() {
 }
 
 export async function checkUserRole(user_id: String) {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}}/auth/user/role`,{
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({user_id})
-    });
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}}/auth/user/role`,{
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({user_id})
+        });
+    
+        if (res.ok) {
+            let data = await res.json();
+            return data.data.role;
+        }
+        return "";
+    } catch(e) {
+        console.error(e);
+        return "";
+    }
 }
