@@ -11,7 +11,6 @@
 
 ## TODO
 
-* Implement Mark as done functionality for projects based on a particular user
 * Add a loading spinner whenever esssntial data is being retrieved from the backend. For example, when checking if the user is logged in.
 
 ## Subscription Model
