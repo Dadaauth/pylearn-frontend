@@ -72,5 +72,4 @@ async function fetchProjects() {
         console.error("An error occured!!!", e);
         return [];
     }
-    // also fetch the project status specific to a particular student
 }
