@@ -1,8 +1,7 @@
 "use client"
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { cookies } from "next/headers";
-import { checkAuth, checkUserRole } from "@/utils/auth";
+import { checkAuth, checkUserRole, fetch_basic_user_details } from "@/utils/auth";
 
 export default function ProtectedAdmin({
   children,
@@ -16,7 +15,8 @@ export default function ProtectedAdmin({
     useEffect(() => {
         (async () => {
             const loggedIn = await checkAuth();
-            const admin = await checkUserRole(String((await cookies()).get("user_id")?.value));
+            let user_id = String((await fetch_basic_user_details()).user_id);
+            const admin = await checkUserRole(user_id);
             if (!loggedIn) {
                 router.push("/auth/login");
             } else {
