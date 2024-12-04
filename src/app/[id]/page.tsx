@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { remark } from "remark";
 import html from 'remark-html';
 import { Button } from "@nextui-org/react";
-import { RemoveDone, DoneAll } from "@mui/icons-material";
+import { DoneAll } from "@mui/icons-material";
 import AppNavBar from "@/components/ui/navbar";
 import ProtectedRoute from "@/components/utils/protected";
 import { MarkProjectAsCompleted } from "@/utils/project";
@@ -26,10 +26,10 @@ export default function Page({
             const p_id = (await params).id
 
             try {
-                let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/fetch/single?q=title,content&id=${p_id}`)
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/fetch/single?q=title,content&id=${p_id}`)
 
                 if (res.ok) {
-                    let project = (await res.json()).data.project;
+                    const project = (await res.json()).data.project;
                     const processedContent = await remark().use(html).process(project.content);
                     setMarkDownHTML(processedContent.toString());
                     setProject(project);
@@ -37,7 +37,7 @@ export default function Page({
                     console.log("An error occured!");
                 }
             } catch (e) {
-                console.log("An error occured!");
+                console.error("An error occured!", e);
             }
         }
 
@@ -52,7 +52,7 @@ export default function Page({
 
         VerifyProjectStatus();
         getProjectDetails();
-    }, [])
+    }, [params]);
 
     async function MarkProjectAsCompletedWrapper() {
         const p_id = (await params).id

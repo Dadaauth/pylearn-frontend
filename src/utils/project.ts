@@ -1,11 +1,11 @@
 "use server"
 import { cookies } from "next/headers"
 
-export async function RetrieveProjectsStatuses(p_ids: Array<String>) {
-    let student_id = (await cookies()).get("user_id")?.value;
+export async function RetrieveProjectsStatuses(p_ids: Array<string>) {
+    const student_id = (await cookies()).get("user_id")?.value;
 
     try {
-        let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/status`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/status`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -14,7 +14,7 @@ export async function RetrieveProjectsStatuses(p_ids: Array<String>) {
         });
 
         if (res.ok) {
-            let data = await res.json();
+            const data = await res.json();
             return data.data.statuses;
         }
 
@@ -25,11 +25,11 @@ export async function RetrieveProjectsStatuses(p_ids: Array<String>) {
     }
 }
 
-export async function MarkProjectAsCompleted(project_id: String) {
-    let student_id = (await cookies()).get("user_id")?.value;
+export async function MarkProjectAsCompleted(project_id: string) {
+    const student_id = (await cookies()).get("user_id")?.value;
 
     try {
-        let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/mark/done`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/mark/done`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -42,6 +42,7 @@ export async function MarkProjectAsCompleted(project_id: String) {
         }
         return false;
     } catch(e) {
+        console.error(e);
         return false;
     }
 }

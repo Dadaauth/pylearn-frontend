@@ -4,10 +4,10 @@ import { Button, Link, Navbar, NavbarBrand, NavbarContent } from "@nextui-org/re
 import { useEffect, useState } from "react";
 
 interface User {
-    email?: String,
-    first_name?: String,
-    last_name?: String,
-    role?: String,
+    email?: string,
+    first_name?: string,
+    last_name?: string,
+    role?: string,
 }
 export default function AppNavBar() {
     const [loggedIn, setLoggedIn] = useState(false);

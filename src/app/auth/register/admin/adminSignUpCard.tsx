@@ -11,7 +11,7 @@ export default function SignUpCard() {
         "admin_reg_code": "",
     })
 
-    // @ts-ignore
+    // @ts-expect-error This is a React ChangeEvent
     function handleInputChange(e) {
         setFormDetails((prevValue) => {
             return {
@@ -21,8 +21,7 @@ export default function SignUpCard() {
         })
     }
     type Details = "email" | "password" | "first_name" | "last_name" | "admin_reg_code"
-    // @ts-ignore
-    async function submitForm(e) {
+    async function submitForm() {
         console.log(formDetails);
         let detail: Details
         for (detail in formDetails) {
@@ -43,7 +42,7 @@ export default function SignUpCard() {
 
             console.log(await res.json());
         } catch (e) {
-            console.log("Error occurred!!!");
+            console.log("Error occurred!!!", e);
         }
     }
     return (

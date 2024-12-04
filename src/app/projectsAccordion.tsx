@@ -12,10 +12,15 @@ export default function ProjectsAccordion() {
             let pjts = await fetchProjects();
 
             // fetch the projects statuses
-            let pjts_ids = pjts.map((p: any) => p.id);
+            // @ts-expect-error This is just necessary
+            const pjts_ids = pjts.map((p) => p.id);
             RetrieveProjectsStatuses(pjts_ids).then((statuses) => {
-                pjts = pjts.map((p: any) => {
-                    p.status = statuses.filter((s: any) => s.id == p.id)[0]?.status;
+                // @ts-expect-error This is just necessary
+                pjts = pjts.map((p) => {
+                    p.status = statuses.filter((s: {
+                        "id": string,
+                        "description": string,
+                    }) => s.id == p.id)[0]?.status;
                     return p;
                 });
                 setProjects(pjts);
@@ -26,17 +31,16 @@ export default function ProjectsAccordion() {
         getProjects();
     }, [])
     type Project = {
-        "id": String,
-        "description": String,
-        "status": String,
-        "title": String,
+        "id": string,
+        "description": string,
+        "status": string,
+        "title": string,
     }
     return (
         <Accordion variant="splitted" className="my-4">
             {projects.map((project: Project) => {
                 return (
                     <AccordionItem
-                    // @ts-ignore
                         key={project.id}
                         aria-label={project.title}
                         title={project.title}
@@ -59,13 +63,13 @@ export default function ProjectsAccordion() {
 }
 async function fetchProjects() {
     try {
-        let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/fetch/all?q=id,title,description`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/fetch/all?q=id,title,description`);
         if (res.ok) {
-            let data = (await res.json()).data
+            const data = (await res.json()).data
             return data;
         } else return [];
     } catch (e) {
-        console.log("An error occured!!!");
+        console.error("An error occured!!!", e);
         return [];
     }
     // also fetch the project status specific to a particular student

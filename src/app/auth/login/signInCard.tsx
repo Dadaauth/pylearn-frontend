@@ -11,7 +11,7 @@ export default function SignInCard() {
         "role": "",
     });
 
-    // @ts-ignore
+    // @ts-expect-error This is a React ChangeEvent
     function handleInputChange(e) {
         setFormDetails((prevValue) => {
             return {
@@ -21,8 +21,8 @@ export default function SignInCard() {
         })
     }
     type Details = "email" | "password" | "role"
-    // @ts-ignore
-    async function submitForm(e) {
+
+    async function submitForm() {
         let detail: Details
         for (detail in formDetails) {
             if (formDetails[detail] == "") return

@@ -4,7 +4,7 @@ import { Button, Input, Textarea } from "@nextui-org/react";
 import { remark } from "remark";
 import html from 'remark-html';
 
-// @ts-ignore
+// @ts-expect-error This is just necessary
 export default function Form({endpoint, method="POST", loading=false, title="", description="", content=""}) {
     const [projectDetails, setProjectDetails] = useState({
         "title": "",
@@ -15,16 +15,15 @@ export default function Form({endpoint, method="POST", loading=false, title="", 
 
     useEffect(() => {
         if (!loading) {setProjectDetails({title, description, content})}
-    }, [loading])
+    }, [loading, content, description, title])
 
-    async function setMarkdownPreview(value: String) {
+    async function setMarkdownPreview(value: string) {
         // Convert MarkDown to HTML for preview
-        // @ts-ignore
-        let html_str = (await remark().use(html).process(value)).toString()
+        const html_str = (await remark().use(html).process(value)).toString()
         setMarkdownContent(html_str);
     }
 
-    // @ts-ignore
+    // @ts-expect-error This is just necessary
     function handleInputChange(e) {
         if (e.target.name == "content") setMarkdownPreview(e.target.value);
         setProjectDetails((prevValue) => {
@@ -69,10 +68,10 @@ export default function Form({endpoint, method="POST", loading=false, title="", 
     );
 }
 
-// @ts-ignore
+// @ts-expect-error This is just necessary
 async function submitForm(projectDetails, endpoint, method) {
     console.log(projectDetails);
-    for (let detail in projectDetails) {
+    for (const detail in projectDetails) {
         if (projectDetails[detail] == "") return
     }
     try {
@@ -87,6 +86,6 @@ async function submitForm(projectDetails, endpoint, method) {
         if (res.ok) console.log("Operation Successfull!");
         else console.log("Error occurred!!!");
     } catch (e) {
-        console.log("Error occurred!!!");
+        console.log("Error occurred!!!", e);
     }
 }

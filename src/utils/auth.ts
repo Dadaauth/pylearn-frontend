@@ -4,9 +4,9 @@ import { cookies } from "next/headers";
 
 
 type Credentials = {
-    email: String,
-    password: String,
-    role: String,
+    email: string,
+    password: string,
+    role: string,
 }
 export async function signIn(credentials: Credentials) {
     "use server"
@@ -21,8 +21,8 @@ export async function signIn(credentials: Credentials) {
 
         if (res.ok) {
             console.log("Login Successful");
-            let data = (await res.json()).data
-            for (let key in data) {
+            const data = (await res.json()).data
+            for (const key in data) {
                 cookies().set(key, data[key])
             }
         } else {
@@ -30,7 +30,7 @@ export async function signIn(credentials: Credentials) {
             return;
         }
     } catch (e) {
-        console.log("Error occurred!!!");
+        console.log("Error occurred!!!", e);
         return;
     }
 
@@ -43,7 +43,7 @@ export async function SignOut() {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/auth/logout`);
 
         if (res.ok) {
-            let cks = (await cookies()).getAll()
+            const cks = (await cookies()).getAll()
             for (let i = 0; i < cks.length; i++) {
                 (await cookies()).delete(cks[i].name);
             }
@@ -53,7 +53,7 @@ export async function SignOut() {
             return;
         }
     } catch (e) {
-        console.log("Error occurred!!!");
+        console.log("Error occurred!!!", e);
         return;
     }
 
@@ -78,7 +78,7 @@ export async function fetch_basic_user_details() {
     return {email, first_name, last_name, role, user_id}
 }
 
-export async function checkUserRole(user_id: String) {
+export async function checkUserRole(user_id: string) {
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}}/auth/user/role`,{
             method: "GET",
@@ -89,7 +89,7 @@ export async function checkUserRole(user_id: String) {
         });
     
         if (res.ok) {
-            let data = await res.json();
+            const data = await res.json();
             return data.data.role;
         }
         return "";

@@ -22,21 +22,21 @@ export default function Page({
             if (p_id == "") return
 
             try {
-                let res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/fetch/single?q=title,description,content&id=${p_id}`)
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/fetch/single?q=title,description,content&id=${p_id}`)
 
                 if (res.ok) {
-                    let pjt = (await res.json()).data.project;
+                    const pjt = (await res.json()).data.project;
                     setProject(pjt);
                     setIsLoading(false);
                 } else {
                     console.log("An error occured!");
                 }
             } catch (e) {
-                console.log("An error occured!");
+                console.log("An error occured!", e);
             }
         }
         getProjectDetails();
-    }, [p_id]);
+    }, [p_id, params]);
     return (
         <>
             <AppNavBar />

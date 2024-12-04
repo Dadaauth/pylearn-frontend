@@ -20,7 +20,7 @@ export default function ProtectedRoute({
                 setIsAuthenticated(true);
             }
         })();
-    }, []);
+    }, [router]);
 
     if (!isAuthenticated) {
         return null;
