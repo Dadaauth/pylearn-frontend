@@ -5,26 +5,7 @@ import { useEffect, useState } from "react";
 
 export default function ProjectsAccordion() {
     const [projects, setProjects] = useState([]);
-    // const projects = [
-    //     {
-    //         "title": "Python | Setting up",
-    //         "id": 0,
-    //         "description": "Learn how to set up your Python development environment, including installing Python and setting up a code editor.",
-    //         "status": "done",
-    //     },
-    //     {
-    //         "title": "Python Basics",
-    //         "id": "1",
-    //         "description": "An introduction to Python programming covering basic syntax, data types, and simple operations.",
-    //         "status": "pending",
-    //     },
-    //     {
-    //         "title": "Python conditionals",
-    //         "id": "2",
-    //         "description": "Understand how to use conditional statements in Python to control the flow of your programs.",
-    //         "status": "pending",
-    //     }
-    // ]
+
     useEffect(() => {
         async function getProjects() {
             setProjects(await fetchProjects())
