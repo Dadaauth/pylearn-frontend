@@ -8,6 +8,7 @@ import { RemoveDone, DoneAll } from "@mui/icons-material";
 import AppNavBar from "@/components/ui/navbar";
 import ProtectedRoute from "@/components/utils/protected";
 import { MarkProjectAsCompleted } from "@/utils/project";
+import { RetrieveProjectsStatuses } from "@/utils/project";
 
 export default function Page({
     params,
@@ -21,7 +22,6 @@ export default function Page({
     const [projectCompleted, setProjectCompleted] = useState(false);
     const [markDownHTML, setMarkDownHTML] = useState("");
     useEffect(() => {
-
         async function getProjectDetails() {
             const p_id = (await params).id
 
@@ -40,6 +40,17 @@ export default function Page({
                 console.log("An error occured!");
             }
         }
+
+        async function VerifyProjectStatus() {
+            const p_id = (await params).id
+            let status = await RetrieveProjectsStatuses([p_id]);
+            if (status.length == 0) return;
+
+            status = status[0];
+            if (status.status == "completed") setProjectCompleted(true);
+        }
+
+        VerifyProjectStatus();
         getProjectDetails();
     }, [])
 
