@@ -12,3 +12,7 @@
 ## TODO
 
 * Implement Mark as done functionality for projects based on a particular user
+
+## Subscription Model
+
+ 450 Naira per month
