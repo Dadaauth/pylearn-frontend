@@ -2,14 +2,27 @@
 import { Accordion, AccordionItem, Button, Link } from "@nextui-org/react";
 import { DoneAll } from "@mui/icons-material";
 import { useEffect, useState } from "react";
+import { RetrieveProjectsStatuses } from "@/utils/project";
 
 export default function ProjectsAccordion() {
     const [projects, setProjects] = useState([]);
 
     useEffect(() => {
         async function getProjects() {
-            setProjects(await fetchProjects())
+            let pjts = await fetchProjects();
+
+            // fetch the projects statuses
+            let pjts_ids = pjts.map((p: any) => p.id);
+            RetrieveProjectsStatuses(pjts_ids).then((statuses) => {
+                pjts = pjts.map((p: any) => {
+                    p.status = statuses.filter((s: any) => s.id == p.id)[0]?.status;
+                    return p;
+                });
+                setProjects(pjts);
+            });
         }
+
+
         getProjects();
     }, [])
     type Project = {
@@ -27,7 +40,7 @@ export default function ProjectsAccordion() {
                         key={project.id}
                         aria-label={project.title}
                         title={project.title}
-                        startContent={project.status == "done" && <DoneAll color="success"/>}
+                        startContent={project.status == "completed" && <DoneAll color="success"/>}
                     >
                         <div className="flex flex-col gap-3">
                             {project.description}
