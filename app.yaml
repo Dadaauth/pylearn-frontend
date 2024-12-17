@@ -1,0 +1,4 @@
+runtime: nodejs22
+service: frontend
+env_variables:
+  NEXT_PUBLIC_API_URL_V1: "https://api.python.authhub.tech/api/v1"
