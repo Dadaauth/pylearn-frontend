@@ -10,6 +10,7 @@ type Credentials = {
 }
 export async function signIn(credentials: Credentials) {
     "use server"
+    let role = "";
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/auth/login`, {
             method: "POST",
@@ -25,6 +26,7 @@ export async function signIn(credentials: Credentials) {
             for (const key in data) {
                 cookies().set(key, data[key])
             }
+            role = data["role"]
         } else {
             console.log("Error occurred!!!");
             return;
@@ -33,7 +35,9 @@ export async function signIn(credentials: Credentials) {
         console.log("Error occurred!!!", e);
         return;
     }
-
+    if (role == "admin") {
+        redirect('/admin');
+    }
     redirect("/");
 }
 
@@ -80,13 +84,7 @@ export async function fetch_basic_user_details() {
 
 export async function checkUserRole(user_id: string) {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}}/auth/user/role`,{
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({user_id})
-        });
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/auth/user/role?id=${user_id}`);
     
         if (res.ok) {
             const data = await res.json();
