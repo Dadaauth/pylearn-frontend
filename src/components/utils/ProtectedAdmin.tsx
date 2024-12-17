@@ -16,7 +16,7 @@ export default function ProtectedAdmin({
         (async () => {
             const loggedIn = await checkAuth();
             const user_id = String((await fetch_basic_user_details()).user_id);
-            const admin = await checkUserRole(user_id);
+            const admin = (await checkUserRole(user_id)) == "admin";
             if (!loggedIn) {
                 router.push("/auth/login");
             } else {
