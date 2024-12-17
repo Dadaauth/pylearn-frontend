@@ -37,7 +37,7 @@ export default function ProjectsAccordion() {
         "title": string,
     }
     return (
-        <Accordion variant="splitted" className="my-4">
+        <Accordion variant="splitted" className="mt-8 md:ml-20 md:max-w-[50%]">
             {projects.map((project: Project) => {
                 return (
                     <AccordionItem
@@ -48,12 +48,14 @@ export default function ProjectsAccordion() {
                     >
                         <div className="flex flex-col gap-3">
                             {project.description}
-                            <Button
-                                variant={"ghost"}
-                                color="primary"
-                                href={`/${project.id}`}
-                                as={Link}
-                            >Open</Button>
+                            <div className="flex flex-row gap-3 justify-end">
+                                <Button
+                                    variant={"ghost"}
+                                    color="primary"
+                                    href={`/${project.id}`}
+                                    as={Link}
+                                >Open</Button>
+                            </div>
                         </div>
                     </AccordionItem>
                 );
