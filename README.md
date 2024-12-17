@@ -1,4 +1,4 @@
-# Swe-Frontend Code
+# Pylearn Project - Frontend Code
 
 ## Tools
 
