@@ -1,7 +1,9 @@
 "use client"
+import Link from "next/link";
 import { checkAuth, fetch_basic_user_details, SignOut } from "@/utils/auth";
-import { Button, Link, Navbar, NavbarBrand, NavbarContent } from "@nextui-org/react";
+import { Button, Link as Link_K, Navbar, NavbarBrand, NavbarContent } from "@nextui-org/react";
 import { useEffect, useState } from "react";
+import { Spinner } from "@nextui-org/react";
 
 interface User {
     email?: string,
@@ -10,6 +12,7 @@ interface User {
     role?: string,
 }
 export default function AppNavBar() {
+    const [loading, setLoading] = useState(true);
     const [loggedIn, setLoggedIn] = useState(false);
     const [user, setUser] = useState<User>({
         "email": undefined,
@@ -20,14 +23,20 @@ export default function AppNavBar() {
 
     useEffect(() => {
         (async () => setLoggedIn(await checkAuth()))();
-        (async () => setUser(await fetch_basic_user_details()))();
+        (async () => {
+            setUser(await fetch_basic_user_details());
+            setLoading(false);
+        })();
     },[])
     return (
         <Navbar>
             <NavbarBrand>
-                <p>A-SWE</p>
+                <Link href={"/"} color="foreground">
+                    <p>A-SWE</p>
+                </Link>
             </NavbarBrand>
             <NavbarContent justify="end">
+            {loading && <Spinner />}
                 {loggedIn?
                     <>
                         <p>Welcome {user.first_name}</p>
@@ -37,11 +46,11 @@ export default function AppNavBar() {
                     <>
                         <Button
                             variant="ghost"
-                            as={Link}
+                            as={Link_K}
                             href="/auth/login"
                         >Login</Button>
                         <Button
-                            as={Link}
+                            as={Link_K}
                             href="/auth/register"
                         >SignUp</Button>
                     </>
