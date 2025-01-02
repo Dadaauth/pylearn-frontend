@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react";
-import { Input, Card, CardHeader, CardBody, CardFooter, Button } from "@nextui-org/react";
+import { Input, Card, CardHeader, CardBody, CardFooter, Button, Form } from "@nextui-org/react";
 
 export default function SignUpCard() {
     const [formDetails, setFormDetails] = useState({
@@ -48,37 +48,42 @@ export default function SignUpCard() {
         <div className="flex justify-center items-center">
             <Card className="w-96">
                 <CardHeader>
-                    <p>Sign Up</p>
+                    <p>Student Sign Up</p>
                 </CardHeader>
                 <CardBody className="flex flex-col gap-5">
-                    <Input
-                        type="email"
-                        name="email"
-                        label="Email:"
-                        onChange={handleInputChange}
-                    />
-                    <Input
-                        type="text"
-                        name="first_name"
-                        label="First Name"
-                        onChange={handleInputChange}
-                    />
-                    <Input
-                        type="text"
-                        name="last_name"
-                        label="Last Name"
-                        onChange={handleInputChange}
-                    />
-                    <Input
-                        type="password"
-                        name="password"
-                        label="Password"
-                        onChange={handleInputChange}
-                    />
+                    <Form>
+                        <Input
+                            type="text"
+                            name="registration_number"
+                            label="Registration Number"
+                            placeholder="Registration Number sent to your email e.g. 2018/123456"
+                            onChange={handleInputChange}
+                            isRequired
+                        />
+                        <Input
+                            type="text"
+                            name="username"
+                            label="Username:"
+                            onChange={handleInputChange}
+                            isRequired
+                        />
+                        <Input
+                            type="text"
+                            name="phone"
+                            label="Phone Number"
+                            onChange={handleInputChange}
+                            isRequired
+                        />
+                        <Input
+                            type="password"
+                            name="password"
+                            label="Password"
+                            onChange={handleInputChange}
+                            isRequired
+                        />
+                        <Button className="self-end bg-[#3776AB] text-white" type="submit">Sign Up</Button>
+                    </Form>
                 </CardBody>
-                <CardFooter className="flex justify-end">
-                    <Button onPress={submitForm} color="warning">Submit</Button>
-                </CardFooter>
             </Card>
         </div>
     );

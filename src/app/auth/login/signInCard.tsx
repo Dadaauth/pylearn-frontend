@@ -1,33 +1,26 @@
 "use client"
-import { useState } from "react";
-import { Input, Card, CardHeader, CardBody, CardFooter, Button } from "@nextui-org/react";
+import { Input, Card, CardHeader, CardBody, CardFooter, Button, Form, Select, SelectItem, Alert } from "@nextui-org/react";
 
 import { signIn } from "@/utils/auth";
+import { useState } from "react";
 
 export default function SignInCard() {
-    const [formDetails, setFormDetails] = useState({
-        "email": "",
-        "password": "",
-        "role": "",
+    const [info, setInfo] = useState({
+        status: "",
+        message: ""
     });
 
-    // @ts-expect-error This is a React ChangeEvent
-    function handleInputChange(e) {
-        setFormDetails((prevValue) => {
-            return {
-                ...prevValue,
-                [e.target.name]: e.target.value
-            }
-        })
-    }
-    type Details = "email" | "password" | "role"
-
-    async function submitForm() {
-        let detail: Details
-        for (detail in formDetails) {
-            if (formDetails[detail] == "") return
-        }
-        await signIn(formDetails);
+    async function submitForm(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        const form = e.currentTarget;
+        const formData = new FormData(form);
+        const data = {
+            username: formData.get("username") as string,
+            password: formData.get("password") as string,
+            role: formData.get("role") as string,
+        };
+        const res = await signIn(data);
+        if (!res) setInfo({status: "fail", message: "An error occured!"});
     }
 
     return (
@@ -37,36 +30,39 @@ export default function SignInCard() {
                     <p>Sign In</p>
                 </CardHeader>
                 <CardBody className="flex flex-col gap-5">
-                    <Input
-                        type="email"
-                        name="email"
-                        label="Email:"
-                        onChange={handleInputChange}
-                    />
-                    <Input
-                        type="password"
-                        name="password"
-                        label="Password"
-                        onChange={handleInputChange}
-                    />
-                    <Input
-                        type="radio"
-                        name="role"
-                        value="student"
-                        label="Student"
-                        onChange={handleInputChange}
-                    />
-                    <Input
-                        type="radio"
-                        name="role"
-                        value="admin"
-                        label="Admin"
-                        onChange={handleInputChange}
-                    />
+                    {info.message != "" &&
+                        <Alert
+                            type={info.status}
+                            color={info.status === "success" ? "success" : "danger"}
+                            title={info.message}
+                        />
+                    }
+                    <Form onSubmit={submitForm} validationBehavior="native">
+                        <Input
+                            type="text"
+                            name="username"
+                            label="Username:"
+                            isRequired
+                        />
+                        <Input
+                            type="password"
+                            name="password"
+                            label="Password"
+                            isRequired
+                        />
+                        <Select
+                            className="max-w-md"
+                            label="Role"
+                            placeholder="Select your Role"
+                            name="role"
+                            isRequired
+                        >
+                            <SelectItem key="student">Student</SelectItem>
+                            <SelectItem key="admin">Admin</SelectItem>
+                        </Select>
+                        <Button type="submit" className="self-end bg-[#3776AB] text-white">Submit</Button>
+                    </Form>
                 </CardBody>
-                <CardFooter className="flex justify-end">
-                    <Button onPress={submitForm} color="warning">Submit</Button>
-                </CardFooter>
             </Card>
         </div>
     );

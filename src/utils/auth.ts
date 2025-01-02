@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 
 
 type Credentials = {
-    email: string,
+    username: string,
     password: string,
     role: string,
 }
@@ -29,11 +29,12 @@ export async function signIn(credentials: Credentials) {
             role = data["role"]
         } else {
             console.log("Error occurred!!!");
-            return;
+            console.log(await res.json());
+            return false;
         }
     } catch (e) {
         console.log("Error occurred!!!", e);
-        return;
+        return false;
     }
     if (role == "admin") {
         redirect('/admin');
@@ -65,34 +66,68 @@ export async function SignOut() {
 }
 
 export async function checkAuth() {
-// Confirm if the current client is logged in. This is a local check only
     const access_token = (await cookies()).get("access_token");
     const refresh_token = (await cookies()).get("refresh_token");
 
     if (!access_token || !refresh_token) return false
-    return true
+
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/auth/is_logged_in`, {
+            headers: {
+            "Authorization": `Bearer ${(await cookies()).get("access_token")?.value}`,
+            }
+        });
+
+        if (res.ok) {
+            return true;
+        } else {
+            console.log("Error occurred!!!");
+            return false;
+        }
+    } catch (e) {
+        console.log("Error occurred!!!");
+        return false;
+    }
+}
+
+export async function checkUserRole() {
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/auth/user/role`, {
+            headers: {
+                "Authorization": `Bearer ${(await cookies()).get("access_token")?.value}`,
+            }
+        });
+
+        if (res.ok) {
+            return (await res.json()).data.role;
+        } else {
+            console.log("Error occurred!!!");
+            return "";
+        }
+    } catch (e) {
+        console.log("Error occurred!!!");
+        return "";
+    }
 }
 
 export async function fetch_basic_user_details() {
-    const email = (await cookies()).get("email")?.value;
-    const first_name = (await cookies()).get("first_name")?.value;
-    const last_name = (await cookies()).get("last_name")?.value;
-    const role = (await cookies()).get("role")?.value;
-    const user_id = (await cookies()).get("user_id")?.value;
-    return {email, first_name, last_name, role, user_id}
-}
-
-export async function checkUserRole(user_id: string) {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/auth/user/role?id=${user_id}`);
-    
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/auth/basic_user_details`, {
+            headers: {
+                "Authorization": `Bearer ${(await cookies()).get("access_token")?.value}`,
+            }
+        });
+
         if (res.ok) {
-            const data = await res.json();
-            return data.data.role;
+            let details = await res.json();
+            console.log(details);
+            return details
+        } else {
+            console.log("Error occurred!!!");
+            return {};
         }
-        return "";
-    } catch(e) {
-        console.error(e);
-        return "";
+    } catch (e) {
+        console.log("Error occurred!!!", e);
+        return {};
     }
 }

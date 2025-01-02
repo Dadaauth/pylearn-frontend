@@ -9,7 +9,7 @@ export default function Page() {
             <AppNavBar />
             <ProtectedAdmin>
                 <div className="mx-6">
-                    <ProjectsAccordion />
+                    
                 </div>
             </ProtectedAdmin>
         </>

@@ -15,8 +15,7 @@ export default function ProtectedAdmin({
     useEffect(() => {
         (async () => {
             const loggedIn = await checkAuth();
-            const user_id = String((await fetch_basic_user_details()).user_id);
-            const admin = (await checkUserRole(user_id)) == "admin";
+            const admin = (await checkUserRole()) == "admin";
             if (!loggedIn) {
                 router.push("/auth/login");
             } else {

@@ -1,8 +1,9 @@
 "use client"
 import { useEffect, useState } from "react";
 import AppNavBar from "@/components/ui/navbar";
-import Form from "../../new/form";
+import Form from "./form";
 import ProtectedAdmin from "@/components/utils/ProtectedAdmin";
+import WelcomeSection from "@/components/ui/welcomeSection";
 
 export default function Page({
     params,
@@ -12,7 +13,8 @@ export default function Page({
     const [project, setProject] = useState({
         title: "",
         description: "",
-        content: "",
+        markdown_content: "",
+        module_id: "",
     });
     const [p_id, set_pid] = useState("");
     const [loading, setIsLoading] = useState(true);
@@ -41,15 +43,16 @@ export default function Page({
         <>
             <AppNavBar />
             <ProtectedAdmin>
+                <WelcomeSection />
                 <div className="mx-6">
-                    <h3>Edit a Project</h3>
+                    <h3 className="font-bold text-[#3776AB] text-lg">Edit a Project</h3>
                     <Form
-                        endpoint={`${process.env.NEXT_PUBLIC_API_URL_V1}/project/edit/${p_id}`}
-                        method="PATCH"
                         loading={loading}
                         title={project.title}
                         description={project.description}
-                        content={project.content}
+                        markdown_content={project.markdown_content}
+                        module_id={project.module_id}
+                        prev_project_id=""
                     />
                 </div>
             </ProtectedAdmin>
