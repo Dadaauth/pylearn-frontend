@@ -1,105 +1,182 @@
 "use client"
-import { useState } from "react";
-import { Button, Input, Select, SelectItem, Textarea } from "@nextui-org/react";
+import { useEffect, useState } from "react";
+import { Alert, Button, Form, Input, Select, SelectItem, Textarea } from "@nextui-org/react";
 import { remark } from "remark";
 import html from 'remark-html';
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
-export default function Form() {
-    const [projectDetails, setProjectDetails] = useState({
-        "title": "",
-        "description": "",
-        "markdown_content": "",
-        "module_id": "",
-        "prev_project_id": "",
-    })
-    const [markdownContent, setMarkdownContent] = useState("");
 
-    async function setMarkdownPreview(value: string) {
-        // Convert MarkDown to HTML for preview
-        const html_str = (await remark().use(html).process(value)).toString()
-        setMarkdownContent(html_str);
-    }
+interface Module {
+    key: string,
+    title: string,
+    projects: Project[],
+}
+interface Project {
+    key: string,
+    title: string,
+}
 
-    // @ts-expect-error This is just necessary
-    function handleInputChange(e) {
-        if (e.target.name == "markdown_content") setMarkdownPreview(e.target.value);
-        setProjectDetails((prevValue) => {
-            return {
-                ...prevValue,
-                [e.target.name]: e.target.value
+export default function ProjectCreateForm() {
+    const [mode, setMode] = useState("draft");
+    const [modules, setModules] = useState<Module[]>([]);
+    const [projects, setProjects] = useState<Project[]>([]);
+    const router = useRouter();
+    const [showError, setShowError] = useState(false);
+
+    useEffect(() => {
+        async function fetchData() {
+            const tmp = await fetchModules();
+            const mds = [];
+            for (let i = 0; i < tmp.length; i++) {
+                let key = tmp[i].id;
+                let title = tmp[i].title;
+                let projects = tmp[i].projects;
+                mds.push({key, title, projects});
             }
-        })
+            setModules(mds);
+        }
+
+        fetchData();
+    }, []);
+
+    function handleModuleSelectionChange(e: React.ChangeEvent<HTMLSelectElement>) {
+        for (let i = 0; i < modules.length; i++) {
+            if (modules[i].key == e.target.value) {
+                setProjects(modules[i].projects);
+                break;
+            }
+        }
     }
 
-    const modules = [
-        {key: "1", title: "Introduction to Python"},
-        {key: "2", title: "Code Version Control"},
-        {key: "3", title: "DevOps & Deployment Strategies"},
-        {key: "4", title: "Introduction to JavaScript"},
-    ];
+    async function submitProjectCreateForm(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        const form = e.currentTarget as HTMLFormElement;
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+        console.log(data);
 
-    const projects = [
-        {key: "1", title: "Introduction to Python"},
-        {key: "2", title: "Code Version Control"},
-        {key: "3", title: "DevOps & Deployment Strategies"},
-        {key: "4", title: "Introduction to JavaScript"},
-    ]
+        data.mode = mode;
+
+        
+        console.log(data);
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/create`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${Cookies.get("access_token")}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (res.ok) {
+                router.push("/admin/projects");
+            } else {
+                setShowError(true);
+            }
+        } catch (err) {
+            setShowError(true);
+        }
+    }
 
     return (
         <div className="my-6 flex justify-center gap-4">
             <div className="flex flex-col gap-4 w-96">
-                <Select
-                    className="max-w-md"
-                    items={modules}
-                    label="Module"
-                    placeholder="Select a Module"
-                    name="module_id"
-                    isRequired
-                    onChange={handleInputChange}
+                {showError &&
+                    <Alert
+                        color="error"
+                        title="An Error Occured!"
+                    />
+                }
+                <Form
+                    onSubmit={submitProjectCreateForm}
+                    validationBehavior="native"
                 >
-                    {(module) => <SelectItem>{module.title}</SelectItem>}
-                </Select>
-                <Select
-                    className="max-w-md"
-                    items={projects}
-                    label="Prev Project"
-                    placeholder="Select the previous project"
-                    name="prev_project_id"
-                    onChange={handleInputChange}
-                >
-                    {(module) => <SelectItem>{module.title}</SelectItem>}
-                </Select>
-                <Input
-                    type="text"
-                    name="title"
-                    label="Project Title"
-                    maxLength={300}
-                    value={projectDetails.title}
-                    required={true}
-                    onChange={handleInputChange}
-                />
-                <Input
-                    type="text"
-                    name="description"
-                    label="Short Description"
-                    maxLength={300}
-                    value={projectDetails.description}
-                    required={true}
-                    onChange={handleInputChange}
-                />
-                <div className="border-4 my-4 max-[767px]:prose prose-lg dark:prose-invert" dangerouslySetInnerHTML={{ __html: markdownContent }}/>
-                <Textarea
-                    name="markdown_content"
-                    label="Project Content (in markdown)"
-                    value={projectDetails.markdown_content}
-                    required={true}
-                    onChange={handleInputChange}
-                />
-                <div className="flex flex-row justify-between items-center">
-                    <Button className="bg-[#F94144] text-white">Draft</Button>
-                    <Button className="bg-[#2EC4B6] text-white">Publish</Button>
-                </div>
+                    <Select
+                        className="max-w-md"
+                        items={modules}
+                        label="Module"
+                        placeholder="Select a Module"
+                        name="module_id"
+                        onChange={handleModuleSelectionChange}
+                        isRequired
+                    >
+                        {(module) => <SelectItem>{module.title}</SelectItem>}
+                    </Select>
+                    <Select
+                        className="max-w-md"
+                        items={projects}
+                        label="Prev Project"
+                        placeholder="Select the previous project"
+                        name="prev_project_id"
+                    >
+                        {(project) => <SelectItem>{project.title}</SelectItem>}
+                    </Select>
+                    <Input
+                        type="text"
+                        name="title"
+                        label="Project Title"
+                        maxLength={300}
+                        isRequired
+                    />
+                    <Input
+                        type="text"
+                        name="description"
+                        label="Short Description"
+                        maxLength={300}
+                    />
+                    <Textarea
+                        name="markdown_content"
+                        label="Project Content (in markdown)"
+                    />
+                    <div className="w-full flex flex-row justify-between items-center">
+                        <Button onClick={() => setMode("draft")} className="bg-[#F94144] text-white" type="submit">Draft</Button>
+                        <Button onClick={() => setMode("publish")} className="bg-[#2EC4B6] text-white" type="submit">Publish</Button>
+                    </div>
+                </Form>
             </div>
         </div>
     );
+}
+
+async function fetchProjects(module_id: string) {
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/all?module_id=${module_id}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${Cookies.get("access_token")}`
+            }
+        })
+
+        if (res.ok) {
+            return (await res.json()).data.projects;
+        } else return [];
+    } catch(err) {
+        return [];
+    }
+}
+
+async function fetchModules() {
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/modules`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${Cookies.get("access_token")}`
+            }
+        })
+
+        if (res.ok) {
+            let modules = (await res.json()).data.modules;
+
+            for (let i = 0; i < modules.length; i++) {
+                let projects = await fetchProjects(modules[i].id);
+                modules[i].projects = projects;
+            }
+            console.log(modules);
+            return modules;
+        } else return [];
+    } catch(err) {
+        return [];
+    }
 }
