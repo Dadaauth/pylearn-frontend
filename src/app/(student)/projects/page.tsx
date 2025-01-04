@@ -1,14 +1,17 @@
 "use client"
-import AppNavBar from "@/components/ui/navbar";
-import WelcomeSection from "@/components/ui/welcomeSection";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Chip, ChipProps, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, getKeyValue } from "@nextui-org/react";
 import KeyboardArrowRightOutlinedIcon from '@mui/icons-material/KeyboardArrowRightOutlined';
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+
+import AppNavBar from "@/components/ui/navbar";
+import WelcomeSection from "@/components/ui/welcomeSection";
 import ProtectedRoute from "@/components/utils/protected";
+import { Project, Module } from "./definitions";
+import { fetchModules } from "./utils";
 
 export default function Page() {
-    const [projects, setProjects] = useState<{ id: string, key: string, name: string, status: string }[] | null>(null);
+    const [projects, setProjects] = useState<Project[]>([]);
     return (
         <>
             <AppNavBar />
@@ -28,10 +31,28 @@ export default function Page() {
 }
 
 function ModulesTable(props: {
-    setProjects: React.Dispatch<React.SetStateAction<{
-        id: string, key: string, name: string, status: string
-    }[] | null>>
+    setProjects: React.Dispatch<React.SetStateAction<Project[]>>
 }) {
+    const [modules, setModules] = useState<Module[]>([]);
+
+     useEffect(() => {
+        async function fetchData() {
+            const tmp = await fetchModules();
+            const mds = [];
+            for (let i = 0; i < tmp.length; i++) {
+                let id = tmp[i].id;
+                let title = tmp[i].title;
+                let projects = tmp[i].projects;
+                let status = tmp[i].status;
+                let description = tmp[i].description;
+                mds.push({id, title, projects, status, description});
+            }
+            setModules(mds);
+        }
+
+        fetchData();
+    }, []);
+
     const columns = [
         {
             key: "name",
@@ -44,134 +65,7 @@ function ModulesTable(props: {
         {
             key: "action",
             label: "ACTION"
-        },
-        
-    ]
-    const rows = [
-        {
-            key: "1",
-            name: "Introduction to Python",
-            status: "completed",
-            projects: [
-                {
-                    id: "1",
-                    key: "1",
-                    name: "Variables And Data Types",
-                    status: "completed"
-                },
-                {
-                    id: "2",
-                    key: "2",
-                    name: "Functions",
-                    status: "completed"
-                },
-                {
-                    id: "3",
-                    key: "3",
-                    name: "Modules and Imports",
-                    status: "completed"
-                },
-                {
-                    id: "4",
-                    key: "4",
-                    name: "The Datetime Module",
-                    status: "completed"
-                },
-            ]
-        },
-        {
-            key: "2",
-            name: "Code Version Control",
-            status: "released",
-            projects: [
-                {
-                    id: "5",
-                    key: "1",
-                    name: "Git",
-                    status: "completed"
-                },
-                {
-                    id: "6",
-                    key: "2",
-                    name: "Github",
-                    status: "completed"
-                },
-                {
-                    id: "7",
-                    key: "3",
-                    name: "Version Control",
-                    status: "released"
-                },
-                {
-                    id: "8",
-                    key: "4",
-                    name: "Collaboration | Push & Pull Requests",
-                    status: "locked"
-                },
-            ]
-        },
-        {
-            key: "3",
-            name: "DevOps & Deployment Strategies",
-            status: "locked",
-            projects: [
-                {
-                    id: "9",
-                    key: "1",
-                    name: "Introduction to DevOps",
-                    status: "locked"
-                },
-                {
-                    id: "10",
-                    key: "2",
-                    name: "Server Monitoring",
-                    status: "locked"
-                },
-                {
-                    id: "11",
-                    key: "3",
-                    name: "Deployment Strategies",
-                    status: "locked"
-                },
-                {
-                    id: "12",
-                    key: "4",
-                    name: "Compression & CI/CD",
-                    status: "locked"
-                },
-            ]
-        },
-        {
-            key: "4",
-            name: "Introduction to JavaScript",
-            status: "locked",
-            projects: [
-                {
-                    id: "13",
-                    key: "1",
-                    name: "Variables And Data Types",
-                    status: "locked"
-                },
-                {
-                    id: "14",
-                    key: "2",
-                    name: "Functions",
-                    status: "locked"
-                },
-                {
-                    id: "15",
-                    key: "3",
-                    name: "ES6 Modules and Imports",
-                    status: "locked"
-                },
-                {
-                    id: "16",
-                    key: "4",
-                    name: "Node.js",
-                    status: "locked"
-                },
-            ]
-        },
+        }, 
     ]
 
     const statusColorMap: Record<string, ChipProps["color"]> = {
@@ -187,10 +81,10 @@ function ModulesTable(props: {
                     {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
                 </TableHeader>
                 <TableBody emptyContent={"No modules to display"}>
-                    {rows.map((item) => {
+                    {modules.map((item) => {
                         return (
-                            <TableRow key={item.key}>
-                                <TableCell>{item.name}</TableCell>
+                            <TableRow key={item.id}>
+                                <TableCell>{item.title}</TableCell>
                                 <TableCell>
                                     <Chip
                                         className="capitalize"
@@ -221,9 +115,7 @@ function ModulesTable(props: {
 
 
 function ProjectsTable(props: {
-    projects: {
-        id: string, key: string, name: string, status: string
-    }[] | null | undefined
+    projects: Project[]
 }) {
     const router = useRouter();
     const columns = [
@@ -263,8 +155,8 @@ function ProjectsTable(props: {
                     <TableBody emptyContent={"No projects to display"}>
                         {props.projects.map((item) => {
                             return (
-                                <TableRow key={item.key}>
-                                    <TableCell>{item.name}</TableCell>
+                                <TableRow key={item.id}>
+                                    <TableCell>{item.title}</TableCell>
                                     <TableCell>
                                         <Chip
                                             className="capitalize"

@@ -7,6 +7,7 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 
 
+
 interface Module {
     key: string,
     title: string,
@@ -54,12 +55,9 @@ export default function ProjectCreateForm() {
         const form = e.currentTarget as HTMLFormElement;
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
-        console.log(data);
 
         data.mode = mode;
 
-        
-        console.log(data);
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/create`, {
                 method: "POST",
