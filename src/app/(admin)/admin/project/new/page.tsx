@@ -48,7 +48,7 @@ function CreateModuleModal({isOpen, onOpenChange}: CreateModuleModalProps) {
         const data = Object.fromEntries(formData.entries());
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/module/create`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/module/create`, {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${Cookies.get("access_token")}`,
