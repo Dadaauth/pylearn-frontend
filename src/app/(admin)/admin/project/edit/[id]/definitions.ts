@@ -4,6 +4,7 @@ export interface Module {
     projects: Projects[],
 }
 export interface Projects {
+    id: string,
     key: string,
     title: string,
 }

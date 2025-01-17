@@ -111,7 +111,7 @@ export default function ProjectEditForm({ project_id }: { project_id: string }) 
                             placeholder="Select a Module"
                             name="module_id"
                             defaultSelectedKeys={[currentProject.module_id]}
-                            onChange={(e) => handleModuleSelectionChange(e, modules, setProjects)}
+                            onChange={(e) => handleModuleSelectionChange(e, modules, setProjects, currentProject.id)}
                             isRequired
                         >
                             {(module) => <SelectItem>{module.title}</SelectItem>}

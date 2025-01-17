@@ -24,10 +24,15 @@ export async function updateCurrentProject(project_id: string, setCurrentProject
     return project;
 }
 
-export function handleModuleSelectionChange(e: React.ChangeEvent<HTMLSelectElement>, modules: Module[], setProjects: React.Dispatch<React.SetStateAction<Projects[]>>) {
+export function handleModuleSelectionChange(e: React.ChangeEvent<HTMLSelectElement>, modules: Module[], setProjects: React.Dispatch<React.SetStateAction<Projects[]>>, current_project_id: string) {
     for (let i = 0; i < modules.length; i++) {
         if (modules[i].key == e.target.value) {
-            setProjects(modules[i].projects);
+            const pjts_temp = []
+            for (let j = 0; j < modules[i].projects.length; j++) {
+                if (modules[i].projects[j].id != current_project_id)
+                    pjts_temp.push(modules[i].projects[j])
+            }
+            setProjects(pjts_temp);
             break;
         }
     }
