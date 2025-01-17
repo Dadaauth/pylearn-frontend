@@ -36,9 +36,9 @@ export async function signIn(credentials: Credentials) {
         console.log("Error occurred!!!", e);
         return false;
     }
-    if (role == "admin") {
-        redirect('/admin');
-    }
+    // if (role == "admin") {
+    //     redirect('/admin');
+    // }
     redirect("/");
 }
 
