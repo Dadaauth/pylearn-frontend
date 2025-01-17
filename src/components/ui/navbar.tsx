@@ -1,9 +1,11 @@
 "use client"
 import React, { useEffect } from "react";
-import { Star, Circle } from "@mui/icons-material";
-import { Avatar, Drawer, DrawerBody, DrawerContent, DrawerHeader, useDisclosure } from "@nextui-org/react";
-import MenuIcon from '@mui/icons-material/Menu';
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
+import { Avatar, Button, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, useDisclosure } from "@nextui-org/react";
+import { Star, Circle } from "@mui/icons-material";
+import MenuIcon from '@mui/icons-material/Menu';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import { Logout } from "@mui/icons-material";
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
@@ -11,6 +13,14 @@ import { Laptop } from "@mui/icons-material";
 
 export default function AppNavBar() {
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
+    const router = useRouter();
+
+    function logout() {
+        let cookies = Cookies.get()
+        for (let cookie in cookies)
+            Cookies.remove(cookie);
+        router.push("/auth/login")
+    }
 
     return (
         <nav className="bg-[#3776AB] min-h-14 flex items-center px-6 mb-6">
@@ -78,13 +88,19 @@ export default function AppNavBar() {
                                         link="/practice"
                                         icon={Laptop}
                                     />
-                                    <DrawerItem
-                                        title="Logout"
-                                        link="/logout"
-                                        icon={Logout}
-                                    />
                                 </div>
                             </DrawerBody>
+                            <DrawerFooter>
+                                <Button
+                                    className="self-end bg-[#3776AB] text-white max-w-sm"
+                                    onPress={logout}
+                                >
+                                    Logout
+                                    {<Logout
+                                        fontSize="medium"
+                                    />}
+                                </Button>
+                            </DrawerFooter>
                         </>
                     )}
                 </DrawerContent>
