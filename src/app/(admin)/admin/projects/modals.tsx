@@ -1,18 +1,38 @@
 "use client"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Form, Input, Alert, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem } from "@nextui-org/react";
 import Cookies from "js-cookie";
+import { fetchModules } from "./utils";
+
 
 export function ModuleEditModal({ isOpen, onOpenChange, toEdit }: {
     isOpen: boolean,
     onOpenChange: (isOpen: boolean) => void,
-    toEdit: { id: string, title: string, status: string, description: string }
+    toEdit: { id: string, title: string, status: string, description: string, prev_module_id: string }
 }) {
     const [isLoading, setIsLoading] = useState(false);
     const [info, setInfo] = useState({
         status: "",
         message: ""
     });
+    const [modules, setModules] = useState<{key: string, title: string}[]>([]);
+
+    useEffect(() => {
+        async function fetchData() {
+            const tmp = await fetchModules();
+            const mds = [];
+            for (let i = 0; i < tmp.length; i++) {
+                if (tmp[i].id == toEdit.id)
+                    continue
+                let key = tmp[i].id;
+                let title = tmp[i].title;
+                mds.push({key, title});
+            }
+            setModules(mds);
+        }
+
+        fetchData();
+    }, [toEdit])
 
     async function handleEditModuleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -21,9 +41,12 @@ export function ModuleEditModal({ isOpen, onOpenChange, toEdit }: {
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
 
+        if (data.prev_module_id == "")
+            delete data.prev_module_id;
+
         try {
             // Update data on the backend
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/module/${toEdit.id}/update`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/module/${toEdit.id}/update`, {
                 method: "PATCH",
                 headers: {
                     "Authorization": `Bearer ${Cookies.get("access_token")}`,
@@ -69,6 +92,16 @@ export function ModuleEditModal({ isOpen, onOpenChange, toEdit }: {
                                 onSubmit={handleEditModuleSubmit}
                                 validationBehavior="native"
                             >
+                                <Select
+                                    className="max-w-md"
+                                    items={modules}
+                                    label="Previous Module"
+                                    placeholder="Select the previous module"
+                                    defaultSelectedKeys={[toEdit.prev_module_id]}
+                                    name="prev_module_id"
+                                >
+                                    {(module) => <SelectItem>{module.title}</SelectItem>}
+                                </Select>
                                 <Input
                                     name="title"
                                     defaultValue={toEdit.title}

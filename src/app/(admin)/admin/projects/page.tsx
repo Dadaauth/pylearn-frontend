@@ -61,10 +61,11 @@ function ModulesTable(props: {
         title: "",
         status: "",
         description: "",
+        prev_module_id: "",
     });
 
-    function openEditModal(id: string, title: string, status: string, description: string) {
-        SetToEdit({id, title, status, description});
+    function openEditModal(id: string, title: string, status: string, description: string, prev_module_id: string) {
+        SetToEdit({id, title, status, description, prev_module_id});
         onOpen();
     }
 
@@ -78,7 +79,8 @@ function ModulesTable(props: {
                 let projects = tmp[i].projects;
                 let status = tmp[i].status;
                 let description = tmp[i].description;
-                mds.push({id, title, projects, status, description});
+                let prev_module_id = tmp[i].prev_module_id;
+                mds.push({id, title, projects, status, description, prev_module_id});
             }
             setModules(mds);
         }
@@ -119,7 +121,7 @@ function ModulesTable(props: {
                                         <EditOutlined
                                             fontSize="small"
                                             className="cursor-pointer"
-                                            onClick={() => openEditModal(item.id, item.title, item.status, item.description)}
+                                            onClick={() => openEditModal(item.id, item.title, item.status, item.description, item.prev_module_id)}
                                         />
                                     </Tooltip>
                                     <Tooltip content="open">

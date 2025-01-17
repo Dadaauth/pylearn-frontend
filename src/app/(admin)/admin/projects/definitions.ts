@@ -3,6 +3,7 @@ export interface Module {
     title: string,
     status: string,
     description: string,
+    prev_module_id: string,
     projects: Project[],
 }
 
