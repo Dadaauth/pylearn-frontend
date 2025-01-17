@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Cookies from "js-cookie";
 import { Avatar, Button, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, useDisclosure } from "@nextui-org/react";
 import { Star, Circle } from "@mui/icons-material";
@@ -14,6 +14,8 @@ import { Laptop } from "@mui/icons-material";
 export default function AppNavBar() {
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
     const router = useRouter();
+    const currentPath = usePathname();
+    const userRole = Cookies.get("role");
 
     function logout() {
         let cookies = Cookies.get()
@@ -76,18 +78,21 @@ export default function AppNavBar() {
                                         title="Home"
                                         link="/"
                                         icon={HomeOutlinedIcon}
-                                        active
+                                        active={currentPath == '/'}
                                     />
                                     <DrawerItem
                                         title="Projects"
-                                        link="/projects"
+                                        link={userRole == "admin"? "/admin/projects": "/projects"}
                                         icon={CalendarTodayIcon}
+                                        active={currentPath == (userRole == "admin"? '/admin/projects': "/projects")}
                                     />
-                                    <DrawerItem
-                                        title="Practice"
-                                        link="/practice"
-                                        icon={Laptop}
-                                    />
+                                    {/* {userRole == "admin" && 
+                                        <DrawerItem
+                                            title=""
+                                            link="/practice"
+                                            icon={Laptop}
+                                        />
+                                    } */}
                                 </div>
                             </DrawerBody>
                             <DrawerFooter>
