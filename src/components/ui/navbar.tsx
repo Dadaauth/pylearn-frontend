@@ -86,13 +86,22 @@ export default function AppNavBar() {
                                         icon={CalendarTodayIcon}
                                         active={currentPath == (userRole == "admin"? '/admin/projects': "/projects")}
                                     />
-                                    {/* {userRole == "admin" && 
-                                        <DrawerItem
-                                            title=""
-                                            link="/practice"
-                                            icon={Laptop}
-                                        />
-                                    } */}
+                                    {userRole == "admin" &&
+                                        <>
+                                            <DrawerItem
+                                                title="Students"
+                                                link="/admin/students"
+                                                icon={Laptop}
+                                                active={currentPath == '/admin/students'}
+                                            />
+                                            <DrawerItem
+                                                title="Submissions"
+                                                link="/admin/students/submissions"
+                                                icon={Laptop}
+                                                active={currentPath == '/admin/students/submissions'}
+                                            />
+                                        </>
+                                    }
                                 </div>
                             </DrawerBody>
                             <DrawerFooter>
