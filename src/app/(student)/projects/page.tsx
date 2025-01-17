@@ -135,13 +135,15 @@ function ProjectsTable(props: {
     ]
 
     const statusColorMap: Record<string, ChipProps["color"]> = {
-        completed: "success",
+        submitted: "success",
+        graded: "success",
+        verified: "success",
         released: "warning",
         locked: "danger"
     }
 
     function OpenProject(id: string, status: string) {
-        if (status == "released" || status == "completed")
+        if (status != "locked")
             router.push(`/project/${id}`)
     }
     return (
@@ -172,7 +174,7 @@ function ProjectsTable(props: {
                                             endContent={<KeyboardArrowRightOutlinedIcon />}
                                             className="cursor-pointer"
                                             onClick={() => OpenProject(item.id, item.status)}
-                                            isDisabled={!(item.status == "released" || item.status == "completed")}
+                                            isDisabled={!(item.status != "locked")}
                                         >
                                             Open
                                         </Chip>

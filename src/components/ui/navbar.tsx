@@ -24,18 +24,18 @@ export default function AppNavBar() {
                     <p className="text-white font-bold">pylearn</p>
                 </div>
                 <div className="flex flex-row gap-6">
-                    <div className="bg-[#FAFAFA] border-1 border-[#FFC107] flex flex-row rounded-[10px] px-2 py-1 gap-3 text-sm">
+                    <div className="bg-[#FAFAFA] border-1 border-[#2EC4B6] flex flex-row rounded-[10px] px-2 py-1 gap-3 text-sm">
                         <p className="flex flex-row items-center gap-1">
-                            209
+                            0
                             <Circle
                                 htmlColor="#AE1414"
                                 fontSize="small"
                             />
                         </p>
                         <p className="flex flex-row items-center gap-1">
-                            19
+                            0
                             <Star
-                                htmlColor="#3776AB"
+                                htmlColor="#2EC4B6"
                                 fontSize="small"
                             />
                         </p>

@@ -66,7 +66,9 @@ export default function ProjectEditForm({ project_id }: { project_id: string }) 
         const data = Object.fromEntries(formData.entries());
     
         data.mode = mode;
-    
+        if (data.prev_project_id == "")
+            delete data.prev_project_id
+
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/edit/${project_id}`, {
                 method: "PATCH",
@@ -145,7 +147,7 @@ export default function ProjectEditForm({ project_id }: { project_id: string }) 
                             defaultValue={currentProject.markdown_content}
                         />
                         <div className="w-full flex flex-row justify-between items-center">
-                            <Button onClick={() => setMode("draft")} className="bg-[#F94144] text-white" type="submit">Draft</Button>
+                            <Button isDisabled={true} onClick={() => setMode("draft")} className="bg-[#F94144] text-white" type="submit">Draft</Button>
                             <Button onClick={() => setMode("publish")} className="bg-[#2EC4B6] text-white" type="submit">Publish</Button>
                         </div>
                     </Form>

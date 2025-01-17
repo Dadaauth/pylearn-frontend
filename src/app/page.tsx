@@ -1,13 +1,22 @@
+"use client"
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Star } from "@mui/icons-material";
+import { RocketLaunch } from "@mui/icons-material";
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import { Progress } from "@nextui-org/react";
+
 import AppNavBar from "@/components/ui/navbar";
 import AppFooter from "@/components/ui/footer";
 import ProjectsAccordion from "./projectsAccordion";
 import ProtectedRoute from "@/components/utils/protected";
-import { RocketLaunch } from "@mui/icons-material";
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import Link from "next/link";
-import { Progress } from "@nextui-org/react";
 import WelcomeSection from "@/components/ui/welcomeSection";
+import { fetchCurrentProjectsForStudent } from "./utils";
+
+type CurrentProjects = Array<{
+  id: string,
+  title: string,
+}>
 
 export default function Home() {
   return (
@@ -16,25 +25,22 @@ export default function Home() {
       <ProtectedRoute>
         <WelcomeSection />
         <div className="mx-6">
-          <div className="bg-[#3776AB] rounded-[10px] max-w-[30rem] min-h-10 p-2 border-[#FFC107] border-1 flex items-center mb-4">
+          <div className="bg-[#3776AB] rounded-[10px] max-w-[30rem] min-h-10 p-2 border-[#2EC4B6] border-1 flex items-center mb-4">
             <p className="text-white w-full flex flex-row justify-between">
-              15 days learning streak
-              <Star />
+              0 days learning streak
+              <Star
+              />
             </p>
           </div>
 
           <div className="sm:flex sm:flex-row sm:gap-16 my-3">
-            <DashboardCard
-              title="Ongoing Projects"
-              nodata_msg="No Projects Available!"
-              show
-            />
+            <CurrentProjectsCard />
 
             <div className="sm:flex sm:flex-col sm:gap-6 sm:w-[30rem]">
               <Progress
                 aria-label="Loading..."
                 label="Projects Completed"
-                value={60}
+                value={0}
                 classNames={{
                   indicator: "bg-[#3776AB]",
                 }}
@@ -44,7 +50,7 @@ export default function Home() {
               <Progress
                 aria-label="Loading..."
                 label="Modules Completed"
-                value={30}
+                value={0}
                 classNames={{
                   indicator: "bg-[#3776AB]",
                 }}
@@ -57,7 +63,6 @@ export default function Home() {
             <DashboardCard
               title="Recent Activities"
               nodata_msg="No Activities!"
-              show
             />
 
             <DashboardCard
@@ -71,9 +76,57 @@ export default function Home() {
   );
 }
 
+
+function CurrentProjectsCard() {
+  const [currentProjects, setCurrentProjects] = useState<CurrentProjects>()
+
+  useEffect(() => {
+    async function fetchData() {
+      const pjts = await fetchCurrentProjectsForStudent();
+      let projects = [];
+      for (let i = 0; i < pjts.length; i++) {
+        let project = pjts[i];
+        projects.push({id: project.id, title: project.title})
+      }
+      setCurrentProjects(projects);
+    }
+
+    fetchData();
+  }, [])
+
+
+  return (
+    <div className="mb-5 sm:w-[30rem]">
+      <div className="bg-[#3776AB] rounded-t-[10px] px-4 py-1">
+        <h3 className="text-white">Current Projects</h3>
+      </div>
+      {currentProjects && currentProjects.length > 0?
+        <div className="border-2 rounded-b-[10px] min-h-[40px] px-3 max-h-[180px] overflow-scroll overflow-x-hidden">
+          <div className="my-2 flex flex-col gap-2">
+            {currentProjects.map((data) => {
+              return (
+                <Link key={data.id} href={`/project/${data.id}`}>
+                  <div className="flex flex-row justify-between border-2 cursor-pointer p-2 rounded-lg hover:bg-[#3776AB] hover:text-white">
+                    <p>{data.title}</p>
+                    <KeyboardArrowRightIcon />
+                  </div>
+                </Link>
+              );
+            })
+            }
+          </div>
+        </div>
+      :
+        <div className="border-2 rounded-b-[10px] min-h-[40px] flex items-center justify-center">
+          <p className="text-center text-[#2B2D42]">No Projects Available! <RocketLaunch /></p>
+        </div>
+      }
+    </div>
+  );
+}
 function DashboardCard(props: {
   title: string,
-  show?: boolean,
+  data?: Array<object>,
   nodata_msg?: string
 }) {
   return (
@@ -81,29 +134,16 @@ function DashboardCard(props: {
       <div className="bg-[#3776AB] rounded-t-[10px] px-4 py-1">
         <h3 className="text-white">{props.title}</h3>
       </div>
-      {props.show?
+      {props.data?
         <div className="border-2 rounded-b-[10px] min-h-[40px] px-3 max-h-[180px] overflow-scroll overflow-x-hidden">
           <div className="my-2 flex flex-col gap-2">
-            <CardItem
-              title="Introduction to Python"
-              id="1"
-            />
-            <CardItem
-              title="Introduction to Python"
-              id="1"
-            />
-            <CardItem
-              title="Introduction to Python"
-              id="1"
-            />
-            <CardItem
-              title="Introduction to Python"
-              id="1"
-            />
-            <CardItem
-              title="Introduction to Python"
-              id="1"
-            />
+            {props.data.map((data) => {
+              return <CardItem
+                title={data.title}
+                id={data.id}
+              />
+            })
+            }
           </div>
         </div>
       :

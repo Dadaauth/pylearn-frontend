@@ -57,6 +57,8 @@ export default function ProjectCreateForm() {
         const data = Object.fromEntries(formData.entries());
 
         data.mode = mode;
+        if (data.prev_project_id == "")
+            delete data.prev_project_id
 
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/create`, {
@@ -129,7 +131,7 @@ export default function ProjectCreateForm() {
                         label="Project Content (in markdown)"
                     />
                     <div className="w-full flex flex-row justify-between items-center">
-                        <Button onClick={() => setMode("draft")} className="bg-[#F94144] text-white" type="submit">Draft</Button>
+                        <Button onClick={() => setMode("draft")} className="bg-[#F94144] text-white" type="submit" isDisabled>Draft</Button>
                         <Button onClick={() => setMode("publish")} className="bg-[#2EC4B6] text-white" type="submit">Publish</Button>
                     </div>
                 </Form>
