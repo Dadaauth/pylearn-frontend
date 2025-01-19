@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import Cookies from "js-cookie";
@@ -13,9 +13,14 @@ import { Laptop } from "@mui/icons-material";
 
 export default function AppNavBar() {
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
+    const [username, setUsername] = useState("undefined")
     const router = useRouter();
     const currentPath = usePathname();
     const userRole = Cookies.get("role");
+
+    useEffect(() => {
+        setUsername(`${Cookies.get("first_name")} ${Cookies.get("last_name")}`)
+    }, [])
 
     function logout() {
         let cookies = Cookies.get()
@@ -52,10 +57,10 @@ export default function AppNavBar() {
                             />
                         </p>
                     </div>
-                    <Avatar
-                        name={`${Cookies.get("first_name")} ${Cookies.get("last_name")}`}
+                    {username && <Avatar
+                        name={username}
                         size="sm"
-                    />
+                    />}
                 </div>
             </header>
 
