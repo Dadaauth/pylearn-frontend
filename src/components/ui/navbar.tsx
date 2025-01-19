@@ -53,7 +53,7 @@ export default function AppNavBar() {
                         </p>
                     </div>
                     <Avatar
-                        name="Clement Dada"
+                        name={`${Cookies.get("first_name")} ${Cookies.get("last_name")}`}
                         size="sm"
                     />
                 </div>

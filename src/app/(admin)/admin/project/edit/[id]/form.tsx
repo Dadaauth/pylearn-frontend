@@ -33,9 +33,9 @@ export default function ProjectEditForm({ project_id }: { project_id: string }) 
             const tmp = await fetchModules();
             const mds = [];
             for (let i = 0; i < tmp.length; i++) {
-                let key = tmp[i].id;
-                let title = tmp[i].title;
-                let projects = tmp[i].projects;
+                const key = tmp[i].id;
+                const title = tmp[i].title;
+                const projects = tmp[i].projects;
                 mds.push({key, title, projects});
             }
             setModules(mds);
@@ -43,7 +43,7 @@ export default function ProjectEditForm({ project_id }: { project_id: string }) 
             // set the previous projects Select Option Input
             for (let i = 0; i < mds.length; i++) {
                 if (mds[i].key == tmp_current_project.module_id) {
-                    let mds_temp = []
+                    const mds_temp = []
                     for (let j = 0; j < mds[i].projects.length; j++) {
                         if (mds[i].projects[j].id != project_id)
                             mds_temp.push(mds[i].projects[j])
@@ -57,7 +57,7 @@ export default function ProjectEditForm({ project_id }: { project_id: string }) 
         }
 
         fetchData();
-    }, []);
+    }, [project_id]);
 
     async function submitProjectEditForm(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();

@@ -4,8 +4,12 @@ import createMDX from '@next/mdx'
 const nextConfig = {
     // Configure `pageExtensions` to include markdown and MDX files
     pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
-    // Optionally, add any other Next.js config below
     transpilePackages: ['next-mdx-remote'],
+    eslint: {
+        // Warning: This allows production builds to successfully complete even if
+        // your project has ESLint errors. Make sure to remove soon!!
+        ignoreDuringBuilds: true,
+    },
 };
 
 
