@@ -126,7 +126,7 @@ function CurrentProjectsCard() {
 }
 function DashboardCard(props: {
   title: string,
-  data?: Array<object>,
+  data?: Array<{title: string, id: string}>,
   nodata_msg?: string
 }) {
   return (
