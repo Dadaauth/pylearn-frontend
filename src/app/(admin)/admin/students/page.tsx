@@ -15,19 +15,6 @@ import Cookies from "js-cookie";
 export default function Page() {
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
 
-    async function FixEmailError() {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/admin/student/fix_email_error`, {
-            headers: {
-                "Authorization": `Bearer ${Cookies.get("access_token")}`
-            }
-        })
-
-        if (res.ok) {
-            console.log("Successful!");
-        } else {
-            console.log("An error occured!")
-        }
-    }
     return (
         <>
             <AppNavBar />
@@ -39,11 +26,6 @@ export default function Page() {
                         className="bg-[#3776AB] text-white mb-5"
                     >
                         Create New Student
-                    </Button>
-                    <Button
-                        onClick={FixEmailError}
-                    >
-                        Fix Email Error
                     </Button>
                     <StudentsTable />
                 </div>
