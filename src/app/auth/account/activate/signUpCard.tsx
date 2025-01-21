@@ -52,10 +52,10 @@ export default function SignUpCard() {
                         validationBehavior="native"
                     >
                         <Input
-                            type="text"
-                            name="registration_number"
-                            label="Registration Number"
-                            placeholder="Registration Number sent to your email e.g. 2025/C1/0001"
+                            type="email"
+                            name="email"
+                            label="Email"
+                            placeholder="the email you registered with"
                             isRequired
                         />
                         <Input
