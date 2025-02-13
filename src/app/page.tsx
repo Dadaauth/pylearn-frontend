@@ -12,6 +12,7 @@ import ProjectsAccordion from "./projectsAccordion";
 import ProtectedRoute from "@/components/utils/protected";
 import WelcomeSection from "@/components/ui/welcomeSection";
 import { fetchCurrentProjectsForStudent } from "./utils";
+import { countCompletedProjectsAndModules } from "./utils";
 
 type CurrentProjects = Array<{
   id: string,
@@ -19,6 +20,24 @@ type CurrentProjects = Array<{
 }>
 
 export default function Home() {
+  const [progressState, setProgressState] = useState({
+    "projects": {
+      all: 0,
+      completed: 0,
+    },
+    "modules": {
+      all: 0,
+      completed: 0,
+    }
+  })
+  useEffect(() => {
+    async function fetchData() {
+      let response = await countCompletedProjectsAndModules();
+      if (response) setProgressState({...response})
+    }
+
+    fetchData();
+  }, [])
   return (
     <>
       <AppNavBar />
@@ -40,7 +59,7 @@ export default function Home() {
               <Progress
                 aria-label="Loading..."
                 label="Projects Completed"
-                value={0}
+                value={(progressState.projects.completed / progressState.projects.all) * 100}
                 classNames={{
                   indicator: "bg-[#3776AB]",
                 }}
@@ -50,7 +69,7 @@ export default function Home() {
               <Progress
                 aria-label="Loading..."
                 label="Modules Completed"
-                value={0}
+                value={(progressState.modules.completed / progressState.modules.all) * 100}
                 classNames={{
                   indicator: "bg-[#3776AB]",
                 }}
