@@ -1,12 +1,13 @@
 "use client"
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Form, Alert, Input, Select, SelectItem, Textarea } from "@nextui-org/react";
+import { Button, Form, Alert, Input, Select, SelectItem, Textarea, VisuallyHidden } from "@nextui-org/react";
 import Cookies from "js-cookie";
 
 import { fetchModules } from "../../../projects/utils";
 import { Module, Projects, Project } from "./definitions";
 import { handleModuleSelectionChange, updateCurrentProject } from "./utils";
+import { ForwardRefEditor } from "@/components/utils/ForwardRefEditor";
 
 export default function ProjectEditForm({ project_id }: { project_id: string }) {
     const router = useRouter();
@@ -90,69 +91,76 @@ export default function ProjectEditForm({ project_id }: { project_id: string }) 
     }
 
     return (
-        <div className="my-6 flex justify-center gap-4">
-            <div className="flex flex-col gap-4 w-96">
-                {showError &&
-                    <Alert
-                        color="error"
-                        title="An Error Occured!"
-                    />
-                }
-                {!loading &&
-                    <Form
-                        onSubmit={submitProjectEditForm}
-                        validationBehavior="native"
-                    >
-                        <p>Status: {currentProject.status}</p>
-                        <Select
-                            className="max-w-md"
-                            items={modules}
-                            label="Module"
-                            placeholder="Select a Module"
-                            name="module_id"
-                            defaultSelectedKeys={[currentProject.module_id]}
-                            onChange={(e) => handleModuleSelectionChange(e, modules, setProjects, currentProject.id)}
-                            isRequired
-                        >
-                            {(module) => <SelectItem>{module.title}</SelectItem>}
-                        </Select>
-                        <Select
-                            className="max-w-md"
-                            items={projects}
-                            label="Previous Project"
-                            placeholder="Select the previous project"
-                            defaultSelectedKeys={[currentProject.prev_project_id]}
-                            name="prev_project_id"
-                        >
-                            {(project) => <SelectItem>{project.title}</SelectItem>}
-                        </Select>
-                        <Input
-                            type="text"
-                            name="title"
-                            label="Project Title"
-                            maxLength={300}
-                            defaultValue={currentProject.title}
-                            isRequired
-                        />
-                        <Input
-                            type="text"
-                            name="description"
-                            label="Short Description"
-                            defaultValue={currentProject.description}
-                            maxLength={300}
-                        />
-                        <Textarea
-                            name="markdown_content"
-                            label="Project Content (in markdown)"
-                            defaultValue={currentProject.markdown_content}
-                        />
-                        <div className="w-full flex flex-row justify-between items-center">
-                            <Button isDisabled={true} onClick={() => setMode("draft")} className="bg-[#F94144] text-white" type="submit">Draft</Button>
-                            <Button onClick={() => setMode("publish")} className="bg-[#2EC4B6] text-white" type="submit">Publish</Button>
+        <div className="my-6">
+            {showError &&
+                <Alert
+                    color="error"
+                    title="An Error Occured!"
+                />
+            }
+            {!loading &&
+                <Form
+                    onSubmit={submitProjectEditForm}
+                    validationBehavior="native"
+                >
+                    <div className="w-full flex flex-wrap flex-row justify-center gap-4">
+                        <div className="flex flex-col gap-4 w-96">
+                            {/* <p>Status: {currentProject.status}</p> */}
+                            <Select
+                                className="max-w-md"
+                                items={modules}
+                                label="Module"
+                                placeholder="Select a Module"
+                                name="module_id"
+                                defaultSelectedKeys={[currentProject.module_id]}
+                                onChange={(e) => handleModuleSelectionChange(e, modules, setProjects, currentProject.id)}
+                                isRequired
+                            >
+                                {(module) => <SelectItem>{module.title}</SelectItem>}
+                            </Select>
+                            <Select
+                                className="max-w-md"
+                                items={projects}
+                                label="Previous Project"
+                                placeholder="Select the previous project"
+                                defaultSelectedKeys={[currentProject.prev_project_id]}
+                                name="prev_project_id"
+                            >
+                                {(project) => <SelectItem>{project.title}</SelectItem>}
+                            </Select>
+                            <Input
+                                type="text"
+                                name="title"
+                                label="Project Title"
+                                maxLength={300}
+                                defaultValue={currentProject.title}
+                                isRequired
+                            />
+                            <Input
+                                type="text"
+                                name="description"
+                                label="Short Description"
+                                defaultValue={currentProject.description}
+                                maxLength={300}
+                            />
+                            <VisuallyHidden>
+                                <Input
+                                    name="markdown_content"
+                                    value={currentProject.markdown_content}
+                                    hidden
+                                />
+                            </VisuallyHidden>
                         </div>
-                    </Form>
-                }
-            </div>
+                        <ForwardRefEditor
+                            onChange={(v) => currentProject.markdown_content = v}
+                            markdown={currentProject.markdown_content}
+                            contentEditableClassName="border-black rounded-md border-b-1"
+                            placeholder="insert markdown content here"
+                        />
+                        <Button onClick={() => setMode("publish")} className="bg-[#2EC4B6] text-white" type="submit">Publish</Button>
+                    </div>
+                </Form>
+            }
         </div>
     );
 }
