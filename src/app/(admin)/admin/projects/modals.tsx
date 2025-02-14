@@ -4,6 +4,125 @@ import { Button, Form, Input, Alert, Modal, ModalBody, ModalContent, ModalFooter
 import Cookies from "js-cookie";
 import { fetchModules } from "./utils";
 
+interface Module {
+    key: string,
+    title: string,
+    projects: Project[],
+}
+interface Project {
+    key: string,
+    title: string,
+}
+
+interface CreateModuleModalProps {
+    isOpen: boolean;
+    onOpenChange: (isOpen: boolean) => void;
+}
+
+export function CreateModuleModal({isOpen, onOpenChange}: CreateModuleModalProps) {
+    const [info, setInfo] = useState({status: "", message: ""});
+    const [isLoading, setIsLoading] = useState(false);
+    const [modules, setModules] = useState<Module[]>([]);
+
+    useEffect(() => {
+        async function fetchData() {
+            const tmp = await fetchModules()
+            const mds = [];
+            for (let i = 0; i < tmp.length; i++) {
+                let key = tmp[i].id;
+                let title = tmp[i].title;
+                let projects = tmp[i].projects;
+                mds.push({key, title, projects});
+            }
+            setModules(mds);
+            console.log(mds);
+        }
+
+        fetchData();
+    }, [])
+
+    async function submitForm(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        setIsLoading(true);
+        const form = e.currentTarget as HTMLFormElement;
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        if (data.prev_module_id == "")
+            delete data.prev_module_id;
+
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/module/create`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${Cookies.get("access_token")}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (res.ok) {
+                setInfo({status: "success", message: "Module Created Successfully!"});
+            } else {
+                setInfo({status: "fail", message: "An Error Occured!"});
+            }
+        } catch (err) {
+            setInfo({status: "fail", message: "An Error Occured!"});
+        } finally {
+            setIsLoading(false)
+        }
+    }
+    return (
+        <>
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader>Create a new Module</ModalHeader>
+                            <ModalBody>
+                                {info.message != "" &&
+                                    <Alert
+                                        type={info.status}
+                                        color={info.status === "success" ? "success" : "danger"}
+                                        title={info.message}
+                                    />
+                                }
+                                <Form
+                                    onSubmit={submitForm}
+                                    validationBehavior="native"
+                                >
+                                    <Input
+                                        name="title"
+                                        label="Module Title"
+                                        placeholder="Max 60 characters"
+                                        maxLength={60}
+                                        isRequired
+                                    />
+                                    <Input
+                                        name="description"
+                                        label="Module Description"
+                                        placeholder="Max 300 characters"
+                                        maxLength={300}
+                                    />
+                                    <Select
+                                        className="max-w-md"
+                                        items={modules}
+                                        label="Prev Module"
+                                        placeholder="select the previous module"
+                                        name="prev_module_id"
+                                    >
+                                        {(module) => <SelectItem>{module.title}</SelectItem>}
+                                    </Select>
+                                    <Button isLoading={isLoading} className="self-end bg-[#3776AB] text-white" type="submit">Submit</Button>
+                                </Form>
+                            </ModalBody>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
+        </>
+    );
+}
 
 export function ModuleEditModal({ isOpen, onOpenChange, toEdit }: {
     isOpen: boolean,

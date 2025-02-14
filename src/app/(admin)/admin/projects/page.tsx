@@ -9,7 +9,7 @@ import { OpenInNew, Delete, EditOutlined } from "@mui/icons-material";
 
 import AppNavBar from "@/components/ui/navbar";
 import ProtectedAdmin from "@/components/utils/ProtectedAdmin";
-import { DeleteModal, ModuleEditModal } from "./modals";
+import { CreateModuleModal, DeleteModal, ModuleEditModal } from "./modals";
 import { fetchModules } from "./utils";
 import { Module, Project } from "./definitions";
 import Link from "next/link";
@@ -21,6 +21,7 @@ export default function Page() {
         title: "",
     });
     const {isOpen, onOpen, onOpenChange}= useDisclosure();
+    const {isOpen: isOpen_newmodule, onOpen: onOpen_newmodule, onOpenChange: onOpenChange_newmodule} = useDisclosure();
     const [projects, setProjects] = useState<Project[]>([]);
 
     function openDeleteModal(id: string, title: string, type: string) {
@@ -31,13 +32,19 @@ export default function Page() {
         <>
             <AppNavBar />
             <ProtectedAdmin>
-                <Button
-                    as={Link}
-                    href={"/admin/project/new"}
-                    className="bg-[#3776AB] text-white mx-6 mb-4"
-                >
-                    Create Project
-                </Button>
+                <div className="mx-6 mb-4 flex gap-4">
+                    <Button size="sm" onPress={onOpen_newmodule} className="bg-[#3776AB] text-white">
+                        Create Module
+                    </Button>
+                    <Button
+                        as={Link}
+                        size="sm"
+                        href={"/admin/project/new"}
+                        className="bg-[#3776AB] text-white"
+                    >
+                        Create Project
+                    </Button>
+                </div>
                 <div className="mx-6 sm:flex flex-row gap-16">
                     <ModulesTable
                         setProjects={setProjects}
@@ -52,6 +59,10 @@ export default function Page() {
                     isOpen={isOpen}
                     onOpenChange={onOpenChange}
                     toDelete={toDelete}
+                />
+                <CreateModuleModal
+                    isOpen={isOpen_newmodule}
+                    onOpenChange={onOpenChange_newmodule}
                 />
             </ProtectedAdmin>
         </>
@@ -210,7 +221,7 @@ function ProjectsTable(props: {
                                                 <OpenInNew
                                                     fontSize="small"
                                                     className="cursor-pointer"
-                                                    onClick={() => router.push(`/project/${item.id}`)}
+                                                    onClick={() => router.push(`/admin/project/${item.id}`)}
                                                 />
                                             </Tooltip>
                                             <Tooltip content="delete">
