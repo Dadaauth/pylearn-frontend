@@ -24,9 +24,8 @@ export default function Page({
         <>
             <AppNavBar />
             <ProtectedAdmin>
-                <WelcomeSection />
                 <div className="mx-6">
-                    <h3 className="font-bold text-[#3776AB] text-lg">Edit a Project</h3>
+                    <h3 className="font-bold text-[#3776AB] text-lg">Edit Project</h3>
                     {!loading &&
                     <ProjectEditForm
                         project_id={project_id}
