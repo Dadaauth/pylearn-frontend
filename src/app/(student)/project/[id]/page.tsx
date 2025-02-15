@@ -9,6 +9,7 @@ import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import { Button, Input, Alert } from "@nextui-org/react";
+import { ReportOutlined } from "@mui/icons-material";
 
 import { Project } from "./definitions";
 import { fetchProjectDetails, submitProject } from "./utils";
@@ -41,6 +42,7 @@ export default function Page({
         status: "",
         module: "",
         author: "",
+        grade: "",
         next_project: {
             id: "",
             status: "",
@@ -67,6 +69,7 @@ export default function Page({
             let status = pjt.status
             let module = pjt.module;
             let author = pjt.author;
+            let grade = pjt.grade;
             let next_project = {
                 id: next_pjt.id,
                 status: next_pjt.status,
@@ -75,7 +78,7 @@ export default function Page({
                 id: prev_pjt.id,
                 status: prev_pjt.status,
             };
-            setProject({id, title, description, status, module, author, next_project, prev_project});
+            setProject({id, title, description, status, module, author, next_project, prev_project, grade});
         }
 
         fetchData();
@@ -106,6 +109,7 @@ export default function Page({
                         <p className="text-sm text-[#2B2D42] font-medium flex flex-row items-center gap-6"><CalendarViewDayOutlinedIcon /> Module: {project.module}</p>
                         <p className="text-sm text-[#2B2D42] font-medium flex flex-row items-center gap-6"><AccessTimeOutlinedIcon /> Status: {project.status}</p>
                         <p className="text-sm text-[#2B2D42] font-medium flex flex-row items-center gap-6"><PersonOutlineOutlinedIcon /> Author: {project.author}</p>
+                        {project.grade && <p className="text-sm text-[#2B2D42] font-medium flex flex-row items-center gap-6"><ReportOutlined /> Grade: {project.grade}</p>}
                         <br />
 
                         <p className="sm:max-w-xl text-[#2B2D42] font-medium text-base">{project.description}</p>

@@ -32,6 +32,7 @@ export async function fetchProjectDetails(project_id: string) {
             status: "",
             module: "",
             author: "",
+            grade: "",
         }
 
     try {
@@ -52,6 +53,7 @@ export async function fetchProjectDetails(project_id: string) {
                 status: "",
                 module: "",
                 author: "",
+                grade: "",
             }
         }
     } catch(err) {
@@ -63,6 +65,7 @@ export async function fetchProjectDetails(project_id: string) {
             status: "",
             module: "",
             author: "",
+            grade: "",
         }
     }
 }

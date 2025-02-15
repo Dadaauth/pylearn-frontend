@@ -6,6 +6,7 @@ export interface Project {
     status: string,
     module: string,
     author: string,
+    grade: string,
     next_project: {
         id: string,
         status: string,
