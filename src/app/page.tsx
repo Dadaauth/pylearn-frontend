@@ -7,6 +7,7 @@ import Cookies from "js-cookie";
 import AppNavBar from "@/components/ui/navbar";
 import ProtectedRoute from "@/components/utils/protected";
 import ProtectedAdmin from "@/components/utils/ProtectedAdmin";
+import ProtectedMentor from "@/components/utils/protectedMentor";
 import WelcomeSection from "@/components/ui/welcomeSection";
 import { countCompletedProjectsAndModules } from "./utils";
 import { CurrentProjectsCard, DashboardCard } from "@/components/ui/home";
@@ -16,7 +17,8 @@ export default function Home() {
   return (
     <>
       <AppNavBar />
-      {userRole == "admin"? <AdminDashboard />: <StudentDashBoard />}
+      {userRole == "admin"? <AdminDashboard />: 
+      userRole == "mentor"? <MentorDashboard />: <StudentDashBoard />}
     </>
   );
 }
@@ -36,13 +38,33 @@ function AdminDashboard() {
           <DashboardCard
             title="Announcements"
             nodata_msg="No Announcements!"
-          />
+            />
         </div>
       </div>
     </ProtectedAdmin>
   );
 }
 
+function MentorDashboard() {
+  return (
+    <ProtectedMentor>
+      <WelcomeSection />
+      <div className="mx-6">
+        <div className="sm:flex sm:flex-row sm:gap-16 my-3">
+          <DashboardCard
+            title="Recent Activities"
+            nodata_msg="No Activities!"
+          />
+
+          <DashboardCard
+            title="Announcements"
+            nodata_msg="No Announcements!"
+          />
+        </div>
+      </div>
+    </ProtectedMentor>
+  );
+}
 
 function StudentDashBoard() {
   const [progressState, setProgressState] = useState({

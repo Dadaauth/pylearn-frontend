@@ -58,6 +58,7 @@ export default function SignInCard() {
                             isRequired
                         >
                             <SelectItem key="student">Student</SelectItem>
+                            <SelectItem key="mentor">Mentor</SelectItem>
                             <SelectItem key="admin">Admin</SelectItem>
                         </Select>
                         <Button type="submit" className="self-end bg-[#3776AB] text-white">Submit</Button>
