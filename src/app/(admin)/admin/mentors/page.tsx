@@ -4,6 +4,7 @@ import { Button, useDisclosure } from "@nextui-org/react";
 import AppNavBar from "@/components/ui/navbar";
 import ProtectedAdmin from "@/components/utils/ProtectedAdmin";
 import { MentorAdd_Modal } from "./modals";
+import { MentorsTable } from "./tables";
 
 
 export default function Page() {
@@ -13,6 +14,7 @@ export default function Page() {
             <AppNavBar />
             <div className="mx-6">
                 <Button onPress={onOpen} className="text-white bg-[#3776AB]">Add Mentor</Button>
+                <MentorsTable />
             </div>
             <MentorAdd_Modal
                 isOpen={isOpen}
