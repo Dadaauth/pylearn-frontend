@@ -1,18 +1,18 @@
 "use client"
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
+import Link from "next/link";
 
 import { Button, Chip, ChipProps, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip, useDisclosure } from "@nextui-org/react";
 import KeyboardArrowRightOutlinedIcon from '@mui/icons-material/KeyboardArrowRightOutlined';
 import { OpenInNew, Delete, EditOutlined } from "@mui/icons-material";
+import Cookies from "js-cookie";
 
 import AppNavBar from "@/components/ui/navbar";
-import ProtectedAdmin from "@/components/utils/ProtectedAdmin";
+import ProtectedAdminMentor from "@/components/utils/ProtectedAdminMentor";
 import { CreateModuleModal, DeleteModal, ModuleEditModal } from "./modals";
 import { fetchModules } from "./utils";
 import { Module, Project } from "./definitions";
-import Link from "next/link";
 
 export default function Page() {
     const [toDelete, SetToDelete] = useState({
@@ -23,6 +23,7 @@ export default function Page() {
     const {isOpen, onOpen, onOpenChange}= useDisclosure();
     const {isOpen: isOpen_newmodule, onOpen: onOpen_newmodule, onOpenChange: onOpenChange_newmodule} = useDisclosure();
     const [projects, setProjects] = useState<Project[]>([]);
+    const userRole = Cookies.get("role")
 
     function openDeleteModal(id: string, title: string, type: string) {
         SetToDelete({id, title, type});
@@ -31,47 +32,56 @@ export default function Page() {
     return (
         <>
             <AppNavBar />
-            <ProtectedAdmin>
-                <div className="mx-6 mb-4 flex gap-4">
-                    <Button size="sm" onPress={onOpen_newmodule} className="bg-[#3776AB] text-white">
-                        Create Module
-                    </Button>
-                    <Button
-                        as={Link}
-                        size="sm"
-                        href={"/admin/project/new"}
-                        className="bg-[#3776AB] text-white"
-                    >
-                        Create Project
-                    </Button>
-                </div>
+            <ProtectedAdminMentor>
+                {userRole == "admin" &&
+                    <div className="mx-6 mb-4 flex gap-4">
+                        <Button size="sm" onPress={onOpen_newmodule} className="bg-[#3776AB] text-white">
+                            Create Module
+                        </Button>
+                        <Button
+                            as={Link}
+                            size="sm"
+                            href={"/admin/project/new"}
+                            className="bg-[#3776AB] text-white"
+                        >
+                            Create Project
+                        </Button>
+                    </div>
+                }
                 <div className="mx-6 sm:flex flex-row gap-16">
                     <ModulesTable
                         setProjects={setProjects}
                         openDeleteModal={openDeleteModal}
+                        userRole={userRole}
                     />
                     <ProjectsTable
                         projects={projects}
                         openDeleteModal={openDeleteModal}
+                        userRole={userRole}
                     />
                 </div>
-                <DeleteModal
-                    isOpen={isOpen}
-                    onOpenChange={onOpenChange}
-                    toDelete={toDelete}
-                />
-                <CreateModuleModal
-                    isOpen={isOpen_newmodule}
-                    onOpenChange={onOpenChange_newmodule}
-                />
-            </ProtectedAdmin>
+                {userRole == 'admin' &&
+                    <>
+                        <DeleteModal
+                            isOpen={isOpen}
+                            onOpenChange={onOpenChange}
+                            toDelete={toDelete}
+                        />
+                        <CreateModuleModal
+                            isOpen={isOpen_newmodule}
+                            onOpenChange={onOpenChange_newmodule}
+                        />
+                    </>
+                }
+            </ProtectedAdminMentor>
         </>
     );
 }
 
 function ModulesTable(props: {
     setProjects: React.Dispatch<React.SetStateAction<Project[]>>,
-    openDeleteModal: Function
+    openDeleteModal: Function,
+    userRole: string | undefined,
 }) {
     const [modules, setModules] = useState<Module[]>([]);
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
@@ -136,13 +146,15 @@ function ModulesTable(props: {
                                     </Chip>
                                 </TableCell>
                                 <TableCell>
-                                    <Tooltip content="edit">
-                                        <EditOutlined
-                                            fontSize="small"
-                                            className="cursor-pointer"
-                                            onClick={() => openEditModal(item.id, item.title, item.status, item.description, item.prev_module_id)}
-                                        />
-                                    </Tooltip>
+                                    {props.userRole == "admin" &&
+                                        <Tooltip content="edit">
+                                            <EditOutlined
+                                                fontSize="small"
+                                                className="cursor-pointer"
+                                                onClick={() => openEditModal(item.id, item.title, item.status, item.description, item.prev_module_id)}
+                                            />
+                                        </Tooltip>
+                                    }
                                     <Tooltip content="open">
                                         <KeyboardArrowRightOutlinedIcon
                                             fontSize="small"
@@ -150,32 +162,37 @@ function ModulesTable(props: {
                                             onClick={() => props.setProjects(item.projects)}
                                         />
                                     </Tooltip>
-                                    <Tooltip content="delete">
-                                        <Delete
-                                            color="error"
-                                            fontSize="small"
-                                            className="cursor-pointer"
-                                            onClick={() => props.openDeleteModal(item.id, item.title, "Module")}
-                                        />
-                                    </Tooltip>
+                                    {props.userRole == "admin" &&
+                                        <Tooltip content="delete">
+                                            <Delete
+                                                color="error"
+                                                fontSize="small"
+                                                className="cursor-pointer"
+                                                onClick={() => props.openDeleteModal(item.id, item.title, "Module")}
+                                            />
+                                        </Tooltip>
+                                    }
                                 </TableCell>
                             </TableRow>
                         );
                     })}
                 </TableBody>
             </Table>
-            <ModuleEditModal
-                isOpen={isOpen}
-                onOpenChange={onOpenChange}
-                toEdit={toEdit}
-            />
+            {props.userRole == "admin" &&
+                <ModuleEditModal
+                    isOpen={isOpen}
+                    onOpenChange={onOpenChange}
+                    toEdit={toEdit}
+                />
+            }
         </div>
     );
 }
 
 function ProjectsTable(props: {
     projects: Project[] | null | undefined,
-    openDeleteModal: Function
+    openDeleteModal: Function,
+    userRole: string | undefined,
 }) {
     const router = useRouter();
 
@@ -210,13 +227,15 @@ function ProjectsTable(props: {
                                             </Chip>
                                         </TableCell>
                                         <TableCell>
-                                            <Tooltip content="edit">
-                                                <EditOutlined
-                                                    fontSize="small"
-                                                    className="cursor-pointer"
-                                                    onClick={() => router.push(`/admin/project/edit/${item.id}`)}
-                                                />
-                                            </Tooltip>
+                                            {props.userRole == "admin" &&
+                                                <Tooltip content="edit">
+                                                    <EditOutlined
+                                                        fontSize="small"
+                                                        className="cursor-pointer"
+                                                        onClick={() => router.push(`/admin/project/edit/${item.id}`)}
+                                                    />
+                                                </Tooltip>
+                                            }
                                             <Tooltip content="open">
                                                 <OpenInNew
                                                     fontSize="small"
@@ -224,14 +243,16 @@ function ProjectsTable(props: {
                                                     onClick={() => router.push(`/admin/project/${item.id}`)}
                                                 />
                                             </Tooltip>
-                                            <Tooltip content="delete">
-                                                <Delete
-                                                    color="error"
-                                                    fontSize="small"
-                                                    className="cursor-pointer"
-                                                    onClick={() => props.openDeleteModal(item.id, item.title, "Project")}
-                                                />
-                                            </Tooltip>
+                                            {props.userRole == "admin" &&
+                                                <Tooltip content="delete">
+                                                    <Delete
+                                                        color="error"
+                                                        fontSize="small"
+                                                        className="cursor-pointer"
+                                                        onClick={() => props.openDeleteModal(item.id, item.title, "Project")}
+                                                    />
+                                                </Tooltip>
+                                            }
                                         </TableCell>
                                     </TableRow>
                                 );

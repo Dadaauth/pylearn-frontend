@@ -89,9 +89,9 @@ export default function AppNavBar() {
                                     />
                                     <DrawerItem
                                         title="Projects"
-                                        link={userRole == "admin"? "/admin/projects": "/projects"}
+                                        link={(userRole == "admin" || userRole == "mentor")? "/admin/projects": "/projects"}
                                         icon={CalendarTodayIcon}
-                                        active={currentPath == (userRole == "admin"? '/admin/projects': "/projects")}
+                                        active={currentPath == ((userRole == "admin" || userRole == "mentor")? '/admin/projects': "/projects")}
                                     />
                                     {(userRole == "admin" || userRole == "mentor") &&
                                         <>
