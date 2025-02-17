@@ -1,39 +1,42 @@
 "use client"
-import AppNavBar from "@/components/ui/navbar";
-import WelcomeSection from "@/components/ui/welcomeSection";
-import ProtectedAdmin from "@/components/utils/ProtectedAdmin";
+import { useEffect, useState } from "react";
 import { Button, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Modal, Input 
     , ModalHeader, ModalBody, ModalFooter, ModalContent,
     useDisclosure,
     Form,
     Alert,
 } from "@nextui-org/react";
-import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
+
+import AppNavBar from "@/components/ui/navbar";
+import WelcomeSection from "@/components/ui/welcomeSection";
+import ProtectedAdminMentor from "@/components/utils/ProtectedAdminMentor";
 
 
 export default function Page() {
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
-
+    const userRole = Cookies.get("role")
     return (
         <>
             <AppNavBar />
-            <ProtectedAdmin>
+            <ProtectedAdminMentor>
                 <WelcomeSection />
                 <div className="mx-6">
+                    {userRole == 'admin' &&
                     <Button
                         onClick={onOpen}
                         className="bg-[#3776AB] text-white mb-5"
                     >
                         Create New Student
                     </Button>
+                    }
                     <StudentsTable />
                 </div>
                 <CreateStudentModal
                     isOpen={isOpen}
                     onOpenChange={onOpenChange}
                 />
-            </ProtectedAdmin>
+            </ProtectedAdminMentor>
         </>
     );
 }
@@ -105,7 +108,7 @@ function CreateStudentModal({isOpen, onOpenChange}: CreateStudentModalProps) {
 
         try {
             console.log(data);
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/admin/student/create`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/student/create`, {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${Cookies.get("access_token")}`,
@@ -179,7 +182,7 @@ function CreateStudentModal({isOpen, onOpenChange}: CreateStudentModalProps) {
 
 async function fetchStudents() {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/admin/students`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/student/all`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${Cookies.get("access_token")}`
