@@ -32,10 +32,12 @@ export default function Page() {
                     }
                     <StudentsTable />
                 </div>
-                <CreateStudentModal
-                    isOpen={isOpen}
-                    onOpenChange={onOpenChange}
-                />
+                {userRole == 'admin' &&
+                    <CreateStudentModal
+                        isOpen={isOpen}
+                        onOpenChange={onOpenChange}
+                    />
+                }
             </ProtectedAdminMentor>
         </>
     );
