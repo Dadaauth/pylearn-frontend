@@ -4,7 +4,7 @@ export async function retrieve_projects_with_submissions() {
     // This function will retrieve data to be displayed in
     // the projects dropdown
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/admin/projects/with_submissions`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/projects/with_submissions`, {
             headers: {
                 "Authorization": `Bearer ${Cookies.get("access_token")}`,
             },
@@ -19,7 +19,7 @@ export async function retrieve_projects_with_submissions() {
 
 export async function i_RefreshSubmissionTable(project_id: string) {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/admin/${project_id}/assigned_submissions`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/${project_id}/assigned_submissions`, {
             headers: {
                 "Authorization": `Bearer ${Cookies.get("access_token")}`
             }
@@ -38,7 +38,7 @@ export async function i_RefreshSubmissionTable(project_id: string) {
 export async function generateStudentSubmission(project_id: string) {
 
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/admin/${project_id}/submissions/generate`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/${project_id}/submissions/generate`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${Cookies.get("access_token")}`,

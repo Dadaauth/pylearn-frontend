@@ -11,6 +11,8 @@ import { Logout } from "@mui/icons-material";
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { Laptop } from "@mui/icons-material";
 
+import { siteconfig } from "@/app/siteconfig";
+
 export default function AppNavBar() {
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
     const [username, setUsername] = useState("undefined")
@@ -95,15 +97,19 @@ export default function AppNavBar() {
                                         <>
                                             <DrawerItem
                                                 title="Students"
-                                                link="/admin/students"
+                                                link={siteconfig.navigation.urls.admin_students_page}
                                                 icon={Laptop}
-                                                active={currentPath == '/admin/students'}
+                                                active={currentPath == siteconfig.navigation.urls.admin_students_page}
                                             />
+                                        </>
+                                    }
+                                    {userRole == "mentor" &&
+                                        <>
                                             <DrawerItem
                                                 title="Submissions"
-                                                link="/admin/students/submissions"
+                                                link={siteconfig.navigation.urls.mentor_projectsubmissions_page}
                                                 icon={Laptop}
-                                                active={currentPath == '/admin/students/submissions'}
+                                                active={currentPath == siteconfig.navigation.urls.mentor_projectsubmissions_page}
                                             />
                                         </>
                                     }

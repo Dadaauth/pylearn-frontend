@@ -6,7 +6,7 @@ import Cookies from "js-cookie";
 
 import AppNavBar from "@/components/ui/navbar";
 import WelcomeSection from "@/components/ui/welcomeSection";
-import ProtectedAdmin from "@/components/utils/ProtectedAdmin";
+import ProtectedMentor from "@/components/utils/protectedMentor";
 import { generateStudentSubmission, i_RefreshSubmissionTable, retrieve_projects_with_submissions } from "./utils";
 import { Project, StudentSubmissions } from "./definitions";
 import Link from "next/link";
@@ -79,7 +79,7 @@ export default function Page() {
     return (
         <>
             <AppNavBar />
-            <ProtectedAdmin>
+            <ProtectedMentor>
                 <WelcomeSection />
                 <div className="mx-6">
                     <Select
@@ -115,7 +115,7 @@ export default function Page() {
                     </div>
                     <ProjectSubmissionsTable data={studentsSubmissionData} />
                 </div>
-            </ProtectedAdmin>
+            </ProtectedMentor>
         </>
     );
 }
@@ -191,7 +191,7 @@ function GradeProjectModal({isOpen, onOpenChange, projectData}) {
         console.log(data);
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/admin/project/grade`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/grade`, {
                 method: "PATCH",
                 headers: {
                     "Authorization": `Bearer ${Cookies.get("access_token")}`,
