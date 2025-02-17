@@ -9,15 +9,14 @@ import CalendarViewDayOutlinedIcon from '@mui/icons-material/CalendarViewDayOutl
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import { ArrowBack, ArrowForward, EditOutlined } from "@mui/icons-material";
-import { Button, Input, Alert } from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
+import Cookies from "js-cookie";
 
 import { Project } from "./definitions";
 import { fetchProjectDetails } from "./utils";
 import AppNavBar from "@/components/ui/navbar";
-import ProtectedRoute from "@/components/utils/protected";
 import { CustomCODE, CustomH2, CustomLink, CustomP, CustomPRE, CustomUL } from "./customComponents";
-import router from "next/router";
-import ProtectedAdmin from "@/components/utils/ProtectedAdmin";
+import ProtectedAdminMentor from "@/components/utils/ProtectedAdminMentor";
 
 const overrideComponents: MDXComponents = {
     h2: (props) => <CustomH2 {...props}>{props.children}</CustomH2>,
@@ -51,6 +50,7 @@ export default function Page({
         },
     });
     const [markdownContent, setMarkdownContent] = useState<{ compiledSource?: string | undefined; scope?: Record<string, unknown> | undefined; frontmatter?: Record<string, unknown> | undefined; }>()
+    const userRole = Cookies.get("role");
 
     useEffect(() => {
         async function fetchData() {
@@ -84,18 +84,20 @@ export default function Page({
     return (
         <>
             <AppNavBar />
-            <ProtectedAdmin>
+            <ProtectedAdminMentor>
                 <div className="mx-6">
                     <div className="my-6">
                         <h3 className="my-4 text-2xl font-bold text-[#3776AB] flex items-center gap-3">
                             {project.title}
-                            <Tooltip content="edit project">
-                                <EditOutlined
-                                    fontSize="small"
-                                    className="cursor-pointer"
-                                    onClick={() => router.push(`/admin/project/edit/${project.id}`)}
-                                />
-                            </Tooltip>
+                            {userRole == "admin" &&
+                                <Tooltip content="edit project">
+                                    <EditOutlined
+                                        fontSize="small"
+                                        className="cursor-pointer"
+                                        onClick={() => router.push(`/admin/project/edit/${project.id}`)}
+                                    />
+                                </Tooltip>
+                            }
                         </h3>
                         <p className="text-sm text-[#2B2D42] font-medium flex flex-row items-center gap-6"><CalendarViewDayOutlinedIcon /> Module: {project.module}</p>
                         <p className="text-sm text-[#2B2D42] font-medium flex flex-row items-center gap-6"><AccessTimeOutlinedIcon /> Status: {project.status}</p>
@@ -127,7 +129,7 @@ export default function Page({
                         </div>
                     </div>
                 </div>
-            </ProtectedAdmin>
+            </ProtectedAdminMentor>
         </>
     );
 }

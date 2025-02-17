@@ -14,7 +14,7 @@ export async function fetchProjectDetails(project_id: string) {
         }
 
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/admin/project/${project_id}`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/${project_id}`, {
             headers: {
                 "Authorization": `Bearer ${Cookies.get("access_token")}`
             }
