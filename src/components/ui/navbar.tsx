@@ -93,6 +93,14 @@ export default function AppNavBar() {
                                         icon={CalendarTodayIcon}
                                         active={currentPath == ((userRole == "admin" || userRole == "mentor")? '/admin/projects': "/projects")}
                                     />
+                                    {userRole == "admin" &&
+                                        <DrawerItem
+                                            title="Mentors"
+                                            link={siteconfig.navigation.urls.admin_view_mentors}
+                                            icon={Laptop}
+                                            active={currentPath == siteconfig.navigation.urls.admin_view_mentors}
+                                        />
+                                    }
                                     {(userRole == "admin" || userRole == "mentor") &&
                                         <>
                                             <DrawerItem
