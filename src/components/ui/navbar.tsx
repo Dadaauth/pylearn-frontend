@@ -94,12 +94,20 @@ export default function AppNavBar() {
                                         active={currentPath == ((userRole == "admin" || userRole == "mentor")? '/admin/projects': "/projects")}
                                     />
                                     {userRole == "admin" &&
-                                        <DrawerItem
-                                            title="Mentors"
-                                            link={siteconfig.navigation.urls.admin_view_mentors}
-                                            icon={Laptop}
-                                            active={currentPath == siteconfig.navigation.urls.admin_view_mentors}
-                                        />
+                                        <>
+                                            <DrawerItem
+                                                title="Mentors"
+                                                link={siteconfig.navigation.urls.admin_view_mentors}
+                                                icon={Laptop}
+                                                active={currentPath == siteconfig.navigation.urls.admin_view_mentors}
+                                            />
+                                            <DrawerItem
+                                                title="Courses"
+                                                link={siteconfig.navigation.urls.admin.pages.courses}
+                                                icon={Laptop}
+                                                active={currentPath == siteconfig.navigation.urls.admin.pages.courses}
+                                            />
+                                        </>
                                     }
                                     {(userRole == "admin" || userRole == "mentor") &&
                                         <>
