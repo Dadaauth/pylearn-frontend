@@ -22,20 +22,12 @@ export function MentorsTable() {
                 <TableHeader>
                     <TableColumn>Name</TableColumn>
                     <TableColumn>Email</TableColumn>
-                    <TableColumn>Status</TableColumn>
-                    <TableColumn>Actions</TableColumn>
                 </TableHeader>
                 <TableBody>
                     {mentors.map((mentor, index) => (
                         <TableRow key={index}>
                             <TableCell>{mentor.first_name} {mentor.last_name}</TableCell>
                             <TableCell>{mentor.email}</TableCell>
-                            <TableCell>{mentor.status}</TableCell>
-                            <TableCell>
-                                <Button className="bg-[#F94144] text-white">
-                                    Delete
-                                </Button>
-                            </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
