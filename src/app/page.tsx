@@ -27,7 +27,6 @@ export default function Home() {
 function AdminDashboard() {
   return (
     <ProtectedAdmin>
-      <WelcomeSection />
       <div className="mx-6">
         <div className="sm:flex sm:flex-row sm:gap-16 my-3">
           <DashboardCard
@@ -48,7 +47,6 @@ function AdminDashboard() {
 function MentorDashboard() {
   return (
     <ProtectedMentor>
-      <WelcomeSection />
       <div className="mx-6">
         <div className="sm:flex sm:flex-row sm:gap-16 my-3">
           <DashboardCard
@@ -88,7 +86,6 @@ function StudentDashBoard() {
   return (
     <>
       <ProtectedRoute>
-        <WelcomeSection />
         <div className="mx-6">
           <div className="bg-[#3776AB] rounded-[10px] max-w-[30rem] min-h-10 p-2 border-[#2EC4B6] border-1 flex items-center mb-4">
             <p className="text-white w-full flex flex-row justify-between">

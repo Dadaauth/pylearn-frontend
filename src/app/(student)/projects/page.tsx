@@ -16,7 +16,6 @@ export default function Page() {
         <>
             <AppNavBar />
             <ProtectedRoute>
-                <WelcomeSection />
                 <div className="mx-6 sm:flex flex-row gap-16">
                     <ModulesTable
                         setProjects={setProjects}

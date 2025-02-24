@@ -1,3 +1,4 @@
+// Currently Unused Block of code
 import Cookies from "js-cookie";
 
 export default function WelcomeSection() {

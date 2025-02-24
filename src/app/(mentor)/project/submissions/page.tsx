@@ -80,7 +80,6 @@ export default function Page() {
         <>
             <AppNavBar />
             <ProtectedMentor>
-                <WelcomeSection />
                 <div className="mx-6">
                     <Select
                         size="sm"
