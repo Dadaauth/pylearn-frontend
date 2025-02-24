@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import Cookies from "js-cookie";
-import { Avatar, Button, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, useDisclosure } from "@nextui-org/react";
+import { Avatar, Button, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, Select, SelectItem, useDisclosure } from "@nextui-org/react";
 import { Star, Circle } from "@mui/icons-material";
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
@@ -13,15 +13,39 @@ import { Laptop } from "@mui/icons-material";
 
 import { siteconfig } from "@/app/siteconfig";
 
+interface Course {
+    id: string,
+    title: string,
+}
+
 export default function AppNavBar() {
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
     const [username, setUsername] = useState("undefined")
+    const [courses, setCourses] = useState<Course[]>([]);
+    const [selectedCourse, setSelectedCourse] = useState("");
     const router = useRouter();
     const currentPath = usePathname();
     const userRole = Cookies.get("role");
 
     useEffect(() => {
-        setUsername(`${Cookies.get("first_name")} ${Cookies.get("last_name")}`)
+        setUsername(`${Cookies.get("first_name")} ${Cookies.get("last_name")}`);
+
+        async function fetchCourses() {
+            try {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/course/all`);
+                const tmp = (await res.json()).data.courses;
+                const course_context = Cookies.get("course_context")
+                setCourses(tmp);
+                if (course_context) setSelectedCourse(course_context);
+                else {
+                    setSelectedCourse(tmp[0].id);
+                    Cookies.set("course_context", tmp[0].id);
+                }
+            } catch(err) {
+            }
+        }
+
+        if (userRole == "admin") fetchCourses();
     }, [])
 
     function logout() {
@@ -29,6 +53,11 @@ export default function AppNavBar() {
         for (let cookie in cookies)
             Cookies.remove(cookie);
         router.push("/auth/login")
+    }
+
+    async function handleCourseSelectionChange(e: React.ChangeEvent<HTMLSelectElement>) {
+        setSelectedCourse(e.target.value);
+        Cookies.set("course_context", e.target.value);
     }
 
     return (
@@ -81,6 +110,16 @@ export default function AppNavBar() {
                             <DrawerHeader>Menu</DrawerHeader>
                             <DrawerBody>
                                 <div className="flex flex-col gap-8 mt-6">
+                                    {userRole == "admin" &&
+                                        <Select className="max-w-xs" label="Select a course"
+                                            selectedKeys={[selectedCourse]}
+                                            onChange={handleCourseSelectionChange}
+                                        >
+                                            {courses.map((course) => (
+                                                <SelectItem key={course.id}>{course.title}</SelectItem>
+                                            ))}
+                                        </Select>
+                                    }
                                     <DrawerItem
                                         title="Home"
                                         link="/"
