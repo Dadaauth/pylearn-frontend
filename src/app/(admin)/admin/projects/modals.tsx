@@ -22,24 +22,6 @@ interface CreateModuleModalProps {
 export function CreateModuleModal({isOpen, onOpenChange}: CreateModuleModalProps) {
     const [info, setInfo] = useState({status: "", message: ""});
     const [isLoading, setIsLoading] = useState(false);
-    const [modules, setModules] = useState<Module[]>([]);
-
-    useEffect(() => {
-        async function fetchData() {
-            const tmp = await fetchModules()
-            const mds = [];
-            for (let i = 0; i < tmp.length; i++) {
-                let key = tmp[i].id;
-                let title = tmp[i].title;
-                let projects = tmp[i].projects;
-                mds.push({key, title, projects});
-            }
-            setModules(mds);
-            console.log(mds);
-        }
-
-        fetchData();
-    }, [])
 
     async function submitForm(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -48,8 +30,11 @@ export function CreateModuleModal({isOpen, onOpenChange}: CreateModuleModalProps
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
 
-        if (data.prev_module_id == "")
-            delete data.prev_module_id;
+        const course_id = Cookies.get("course_context");
+        if (!course_id || course_id == "") {
+            setInfo({status: "fail", message: "Please select a course in the sidebar"});
+            return;
+        }
 
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/module/create`, {
@@ -58,7 +43,7 @@ export function CreateModuleModal({isOpen, onOpenChange}: CreateModuleModalProps
                     "Authorization": `Bearer ${Cookies.get("access_token")}`,
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(data)
+                body: JSON.stringify({...data, course_id})
             });
 
             if (res.ok) {
@@ -103,15 +88,6 @@ export function CreateModuleModal({isOpen, onOpenChange}: CreateModuleModalProps
                                         placeholder="Max 300 characters"
                                         maxLength={300}
                                     />
-                                    <Select
-                                        className="max-w-md"
-                                        items={modules}
-                                        label="Prev Module"
-                                        placeholder="select the previous module"
-                                        name="prev_module_id"
-                                    >
-                                        {(module) => <SelectItem>{module.title}</SelectItem>}
-                                    </Select>
                                     <Button isLoading={isLoading} className="self-end bg-[#3776AB] text-white" type="submit">Submit</Button>
                                 </Form>
                             </ModalBody>
@@ -126,7 +102,7 @@ export function CreateModuleModal({isOpen, onOpenChange}: CreateModuleModalProps
 export function ModuleEditModal({ isOpen, onOpenChange, toEdit }: {
     isOpen: boolean,
     onOpenChange: (isOpen: boolean) => void,
-    toEdit: { id: string, title: string, status: string, description: string, prev_module_id: string }
+    toEdit: { id: string, title: string, status: string, description: string }
 }) {
     const [isLoading, setIsLoading] = useState(false);
     const [info, setInfo] = useState({
@@ -158,9 +134,6 @@ export function ModuleEditModal({ isOpen, onOpenChange, toEdit }: {
         const form = e.currentTarget as HTMLFormElement;
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
-
-        if (data.prev_module_id == "")
-            delete data.prev_module_id;
 
         try {
             // Update data on the backend
@@ -209,16 +182,6 @@ export function ModuleEditModal({ isOpen, onOpenChange, toEdit }: {
                                 onSubmit={handleEditModuleSubmit}
                                 validationBehavior="native"
                             >
-                                <Select
-                                    className="max-w-md"
-                                    items={modules}
-                                    label="Previous Module"
-                                    placeholder="Select the previous module"
-                                    defaultSelectedKeys={[toEdit.prev_module_id]}
-                                    name="prev_module_id"
-                                >
-                                    {(module) => <SelectItem>{module.title}</SelectItem>}
-                                </Select>
                                 <Input
                                     name="title"
                                     defaultValue={toEdit.title}
@@ -231,14 +194,6 @@ export function ModuleEditModal({ isOpen, onOpenChange, toEdit }: {
                                     label="Description"
                                     maxLength={300}
                                 />
-                                <Select
-                                    name="status"
-                                    label="Status"
-                                    defaultSelectedKeys={[toEdit.status]}
-                                >
-                                    <SelectItem key="draft">Draft</SelectItem>
-                                    <SelectItem key="published">Published</SelectItem>
-                                </Select>
                                 <Button
                                     className="self-end bg-[#3776AB] text-white"
                                     type="submit"

@@ -8,35 +8,10 @@ import React from "react";
 
 export async function updateCurrentProject(project_id: string, setCurrentProject: React.Dispatch<React.SetStateAction<Project>>) {
     const pjt = await fetchProject(project_id);
-    let id = pjt.id;
-    let title = pjt.title;
-    let module_id = pjt.module_id;
-    let description = pjt.description;
-    let markdown_content = pjt.markdown_content;
-    let status = pjt.status;
-    let prev_project_id = pjt.prev_project_id;
-
-    let project = {
-        id, title, module_id, description,
-        markdown_content, status, prev_project_id
-    }
-    setCurrentProject(project);
-    return project;
+    setCurrentProject(pjt);
+    return pjt;
 }
 
-export function handleModuleSelectionChange(e: React.ChangeEvent<HTMLSelectElement>, modules: Module[], setProjects: React.Dispatch<React.SetStateAction<Projects[]>>, current_project_id: string) {
-    for (let i = 0; i < modules.length; i++) {
-        if (modules[i].key == e.target.value) {
-            const pjts_temp = []
-            for (let j = 0; j < modules[i].projects.length; j++) {
-                if (modules[i].projects[j].id != current_project_id)
-                    pjts_temp.push(modules[i].projects[j])
-            }
-            setProjects(pjts_temp);
-            break;
-        }
-    }
-}
 
 export async function fetchProject(project_id: string) {
 

@@ -4,9 +4,9 @@ import { useRouter } from "next/navigation";
 import { Button, Form, Alert, Input, Select, SelectItem, Textarea, VisuallyHidden } from "@heroui/react";
 import Cookies from "js-cookie";
 
-import { fetchModules } from "../../../projects/utils";
+import { fetchModules, fetchProjects } from "../../../projects/utils";
 import { Module, Projects, Project } from "./definitions";
-import { handleModuleSelectionChange, updateCurrentProject } from "./utils";
+import { updateCurrentProject } from "./utils";
 import { ForwardRefEditor } from "@/components/utils/ForwardRefEditor";
 
 export default function ProjectEditForm({ project_id }: { project_id: string }) {
@@ -22,6 +22,8 @@ export default function ProjectEditForm({ project_id }: { project_id: string }) 
         markdown_content: "",
         status: "",
         prev_project_id: "",
+        release_range: 0,
+        duration_in_days: 0,
     });
     const [showError, setShowError] = useState(false);
     const [loading, setIsLoading] = useState(true);
@@ -31,29 +33,24 @@ export default function ProjectEditForm({ project_id }: { project_id: string }) 
             const tmp_current_project = await updateCurrentProject(project_id, setCurrentProject);
 
 
-            const tmp = await fetchModules();
+            const tmp_modules = await fetchModules();
+            const tmp_projects = await fetchProjects();
             const mds = [];
-            for (let i = 0; i < tmp.length; i++) {
-                const key = tmp[i].id;
-                const title = tmp[i].title;
-                const projects = tmp[i].projects;
-                mds.push({key, title, projects});
+            for (let i = 0; i < tmp_modules.length; i++) {
+                const key = tmp_modules[i].id;
+                const title = tmp_modules[i].title;
+                mds.push({key, title});
             }
             setModules(mds);
-            
-            // set the previous projects Select Option Input
-            for (let i = 0; i < mds.length; i++) {
-                if (mds[i].key == tmp_current_project.module_id) {
-                    const mds_temp = []
-                    for (let j = 0; j < mds[i].projects.length; j++) {
-                        if (mds[i].projects[j].id != project_id)
-                            mds_temp.push(mds[i].projects[j])
-                    }
 
-                    setProjects(mds_temp);
-                    break;
+             // set the previous projects Select Option Input
+             const pjts_temp = [];
+             for (let project of tmp_projects) {
+                if (project.id != tmp_current_project.id) {
+                    pjts_temp.push(project);
                 }
-            }
+             }
+            setProjects(pjts_temp);
             setIsLoading(false);
         }
 
@@ -105,7 +102,6 @@ export default function ProjectEditForm({ project_id }: { project_id: string }) 
                 >
                     <div className="w-full flex flex-wrap flex-row justify-center gap-4">
                         <div className="flex flex-col gap-4 w-96">
-                            {/* <p>Status: {currentProject.status}</p> */}
                             <Select
                                 className="max-w-md"
                                 items={modules}
@@ -113,7 +109,6 @@ export default function ProjectEditForm({ project_id }: { project_id: string }) 
                                 placeholder="Select a Module"
                                 name="module_id"
                                 defaultSelectedKeys={[currentProject.module_id]}
-                                onChange={(e) => handleModuleSelectionChange(e, modules, setProjects, currentProject.id)}
                                 isRequired
                             >
                                 {(module) => <SelectItem>{module.title}</SelectItem>}
@@ -126,7 +121,7 @@ export default function ProjectEditForm({ project_id }: { project_id: string }) 
                                 defaultSelectedKeys={[currentProject.prev_project_id]}
                                 name="prev_project_id"
                             >
-                                {(project) => <SelectItem>{project.title}</SelectItem>}
+                                {(project) => <SelectItem>{project.title} - {project.duration_in_days} days long</SelectItem>}
                             </Select>
                             <Input
                                 type="text"
@@ -142,6 +137,18 @@ export default function ProjectEditForm({ project_id }: { project_id: string }) 
                                 label="Short Description"
                                 defaultValue={currentProject.description}
                                 maxLength={300}
+                            />
+                            <Input
+                                type="number"
+                                name="duration_in_days"
+                                label="Duration Of Project"
+                                defaultValue={`${currentProject.duration_in_days}`}
+                            />
+                            <Input
+                                type="number"
+                                name="release_range"
+                                label="Release Range From Previous Project"
+                                defaultValue={`${currentProject.release_range}`}
                             />
                             <VisuallyHidden>
                                 <Input

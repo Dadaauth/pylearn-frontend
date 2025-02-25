@@ -1,8 +1,9 @@
 import Cookies from "js-cookie";
 
-export async function fetchProjects(module_id: string) {
+export async function fetchProjects() {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/all?module_id=${module_id}`, {
+        const course_id = Cookies.get("course_context");
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/${course_id}/for-admin/all`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${Cookies.get("access_token")}`
@@ -19,7 +20,8 @@ export async function fetchProjects(module_id: string) {
 
 export async function fetchModules() {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/module`, {
+        const course_id = Cookies.get("course_context");
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/module/${course_id}/all`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${Cookies.get("access_token")}`
@@ -27,14 +29,7 @@ export async function fetchModules() {
         })
 
         if (res.ok) {
-            let modules = (await res.json()).data.modules;
-
-            for (let i = 0; i < modules.length; i++) {
-                let projects = await fetchProjects(modules[i].id);
-                modules[i].projects = projects;
-            }
-            console.log(modules);
-            return modules;
+            return (await res.json()).data.modules;
         } else return [];
     } catch(err) {
         return [];

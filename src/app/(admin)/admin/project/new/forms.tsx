@@ -4,17 +4,17 @@ import { useRouter } from "next/navigation";
 import { Alert, Button, Form, Input, Select, SelectItem, Textarea, VisuallyHidden } from "@heroui/react";
 import Cookies from "js-cookie";
 
-import { fetchModules } from "./utils";
+import { fetchModules, fetchProjects } from "./utils";
 import { ForwardRefEditor } from "@/components/utils/ForwardRefEditor";
 
 interface Module {
     key: string,
     title: string,
-    projects: Project[],
 }
 interface Project {
     key: string,
     title: string,
+    duration_in_days: number,
 }
 
 
@@ -28,28 +28,20 @@ export function ProjectCreateForm() {
 
     useEffect(() => {
         async function fetchData() {
-            const tmp = await fetchModules();
+            const tmp_modules = await fetchModules();
+            const tmp_projects = await fetchProjects();
             const mds = [];
-            for (let i = 0; i < tmp.length; i++) {
-                let key = tmp[i].id;
-                let title = tmp[i].title;
-                let projects = tmp[i].projects;
-                mds.push({key, title, projects});
+            for (let i = 0; i < tmp_modules.length; i++) {
+                let key = tmp_modules[i].id;
+                let title = tmp_modules[i].title;
+                mds.push({key, title});
             }
             setModules(mds);
+            setProjects(tmp_projects);
         }
 
         fetchData();
     }, []);
-
-    function handleModuleSelectionChange(e: React.ChangeEvent<HTMLSelectElement>) {
-        for (let i = 0; i < modules.length; i++) {
-            if (modules[i].key == e.target.value) {
-                setProjects(modules[i].projects);
-                break;
-            }
-        }
-    }
 
     async function submitProjectCreateForm(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -62,13 +54,14 @@ export function ProjectCreateForm() {
             delete data.prev_project_id
 
         try {
+            const course_id = Cookies.get("course_context");
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/create`, {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${Cookies.get("access_token")}`,
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify(data)
+                body: JSON.stringify({...data, course_id}),
             });
 
             if (res.ok) {
@@ -101,7 +94,6 @@ export function ProjectCreateForm() {
                                 label="Module"
                                 placeholder="Select a Module"
                                 name="module_id"
-                                onChange={handleModuleSelectionChange}
                                 isRequired
                             >
                                 {(module) => <SelectItem>{module.title}</SelectItem>}
@@ -113,7 +105,7 @@ export function ProjectCreateForm() {
                                 placeholder="Select the previous project"
                                 name="prev_project_id"
                             >
-                                {(project) => <SelectItem>{project.title}</SelectItem>}
+                                {(project) => <SelectItem>{project.title} - {project.duration_in_days} days long</SelectItem>}
                             </Select>
                             <Input
                                 type="text"
@@ -127,6 +119,16 @@ export function ProjectCreateForm() {
                                 name="description"
                                 label="Short Description"
                                 maxLength={300}
+                            />
+                            <Input
+                                type="number"
+                                name="duration_in_days"
+                                label="Duration Of Project"
+                            />
+                            <Input
+                                type="number"
+                                name="release_range"
+                                label="Release Range From Previous Project"
                             />
                             <VisuallyHidden>
                                 <Input

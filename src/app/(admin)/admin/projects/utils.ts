@@ -1,8 +1,9 @@
 import Cookies from "js-cookie";
 
-export async function fetchProjects(module_id: string) {
+export async function fetchProjects(module_id?: string) {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/all?module_id=${module_id}`, {
+        const course_id = Cookies.get("course_context");
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/${course_id}/for-admin/all` + (module_id? `?module_id=${module_id}`: ''), {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${Cookies.get("access_token")}`
@@ -19,7 +20,8 @@ export async function fetchProjects(module_id: string) {
 
 export async function fetchModules() {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/module`, {
+        const course_id = Cookies.get("course_context");
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/module/${course_id}/all`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${Cookies.get("access_token")}`
