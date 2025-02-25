@@ -3,7 +3,8 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import Cookies from "js-cookie";
-import { Avatar, Button, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, Select, SelectItem, useDisclosure } from "@heroui/react";
+import { Avatar, Button, Select, SelectItem, useDisclosure, Drawer,
+    DrawerBody, DrawerContent, DrawerFooter, DrawerHeader } from "@heroui/react";
 import { Star, Circle } from "@mui/icons-material";
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
@@ -17,12 +18,19 @@ interface Course {
     id: string,
     title: string,
 }
+interface Cohort {
+    id: string,
+    name: string,
+    course: Course
+}
 
 export default function AppNavBar() {
-    const {isOpen, onOpen, onOpenChange} = useDisclosure();
+    const {isOpen: isOpen_Drawer, onOpen: onOpen_Drawer, onOpenChange: onOpenChange_Drawer} = useDisclosure();
     const [username, setUsername] = useState("undefined")
     const [courses, setCourses] = useState<Course[]>([]);
+    const [cohorts, setCohorts] = useState<Cohort[]>([]);
     const [selectedCourse, setSelectedCourse] = useState("");
+    const [selectedCohort, setSelectedCohort] = useState("");
     const router = useRouter();
     const currentPath = usePathname();
     const userRole = Cookies.get("role");
@@ -38,14 +46,40 @@ export default function AppNavBar() {
                 setCourses(tmp);
                 if (course_context) setSelectedCourse(course_context);
                 else {
-                    setSelectedCourse(tmp[0].id);
-                    Cookies.set("course_context", tmp[0].id);
+                    if (tmp.length > 0) {
+                        setSelectedCourse(tmp[0].id);
+                        Cookies.set("course_context", tmp[0].id);
+                    }
+                }
+            } catch(err) {
+            }
+        }
+
+        async function fetchMentorAssignedCohorts() {
+            try {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/mentor/assigned_cohorts`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${Cookies.get("access_token")}`,
+                    }
+                });
+                const tmp = (await res.json()).data.cohorts;
+                const cohort_context = Cookies.get("cohort_context")
+                console.log(tmp);
+                setCohorts(tmp);
+                if (cohort_context) setSelectedCohort(cohort_context);
+                else {
+                    if (tmp.length > 0) {
+                        setSelectedCohort(tmp[0].id);
+                        Cookies.set("cohort_context", tmp[0].id);
+                    }
                 }
             } catch(err) {
             }
         }
 
         if (userRole == "admin") fetchCourses();
+        if (userRole == "mentor") fetchMentorAssignedCohorts();
     }, [])
 
     function logout() {
@@ -59,6 +93,10 @@ export default function AppNavBar() {
         setSelectedCourse(e.target.value);
         Cookies.set("course_context", e.target.value);
     }
+    async function handleCohortSelectionChange(e: React.ChangeEvent<HTMLSelectElement>) {
+        setSelectedCohort(e.target.value);
+        Cookies.set("cohort_context", e.target.value);
+    }
 
     return (
         <nav className="bg-[#3776AB] min-h-14 flex items-center px-6 mb-6">
@@ -67,7 +105,7 @@ export default function AppNavBar() {
                     <MenuIcon
                      className="text-white cursor-pointer hover:bg-[#2b2d4233] rounded-full p-1"
                      fontSize="large"
-                     onClick={onOpen}
+                     onClick={onOpen_Drawer}
                     />
                     <p className="text-white font-bold">pylearn</p>
                 </div>
@@ -96,16 +134,16 @@ export default function AppNavBar() {
             </header>
 
             <Drawer
-                isOpen={isOpen}
+                isOpen={isOpen_Drawer}
                 placement="left"
-                onOpenChange={onOpenChange}
+                onOpenChange={onOpenChange_Drawer}
                 size="xs"
                 classNames={{
                     base: "bg-[#FAFAFA]"
                 }}
             >
-                <DrawerContent>
-                    {(onClose) => (
+                <DrawerContent>                
+                    {() => (
                         <>
                             <DrawerHeader>Menu</DrawerHeader>
                             <DrawerBody>
@@ -117,6 +155,16 @@ export default function AppNavBar() {
                                         >
                                             {courses.map((course) => (
                                                 <SelectItem key={course.id}>{course.title}</SelectItem>
+                                            ))}
+                                        </Select>
+                                    }
+                                    {userRole == "mentor" &&
+                                        <Select className="max-w-xs" label="Select a cohort"
+                                            selectedKeys={[selectedCohort]}
+                                            onChange={handleCohortSelectionChange}
+                                        >
+                                            {cohorts.map((cohort) => (
+                                                <SelectItem key={cohort.id}>{`${cohort.name} - ${cohort.course.title}`}</SelectItem>
                                             ))}
                                         </Select>
                                     }
