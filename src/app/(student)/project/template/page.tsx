@@ -5,7 +5,7 @@ import CalendarViewDayOutlinedIcon from '@mui/icons-material/CalendarViewDayOutl
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
-import { Button, Code, Input, Snippet } from "@nextui-org/react";
+import { Button, Code, Input, Snippet } from "@heroui/react";
 import Link from "next/link";
 
 export default function Page({

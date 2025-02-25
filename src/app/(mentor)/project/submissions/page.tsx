@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useState } from "react";
-import { Button, Form, Input, Modal, ModalBody, ModalContent, ModalHeader, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Textarea, useDisclosure } from "@nextui-org/react";
-import { Alert, Select, SelectItem } from "@nextui-org/react";
+import { Button, Form, Input, Modal, ModalBody, ModalContent, ModalHeader, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Textarea, useDisclosure } from "@heroui/react";
+import { Alert, Select, SelectItem } from "@heroui/react";
 import Cookies from "js-cookie";
 
 import AppNavBar from "@/components/ui/navbar";

@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useState } from "react";
 import { Star } from "@mui/icons-material";
-import { Progress } from "@nextui-org/react";
+import { Progress } from "@heroui/react";
 import Cookies from "js-cookie";
 
 import AppNavBar from "@/components/ui/navbar";

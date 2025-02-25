@@ -1,5 +1,5 @@
 "use client"
-import { Input, Card, CardHeader, CardBody, CardFooter, Button, Form, Select, SelectItem, Alert } from "@nextui-org/react";
+import { Input, Card, CardHeader, CardBody, CardFooter, Button, Form, Select, SelectItem, Alert } from "@heroui/react";
 
 import { signIn } from "@/utils/auth";
 import { useState } from "react";
@@ -32,7 +32,6 @@ export default function SignInCard() {
                 <CardBody className="flex flex-col gap-5">
                     {info.message != "" &&
                         <Alert
-                            type={info.status}
                             color={info.status === "success" ? "success" : "danger"}
                             title={info.message}
                         />

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import Cookies from "js-cookie";
-import { Avatar, Button, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, Select, SelectItem, useDisclosure } from "@nextui-org/react";
+import { Avatar, Button, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, Select, SelectItem, useDisclosure } from "@heroui/react";
 import { Star, Circle } from "@mui/icons-material";
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';

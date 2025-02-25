@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react";
-import { Input, Card, CardHeader, CardBody, Button, Form, Alert } from "@nextui-org/react";
+import { Input, Card, CardHeader, CardBody, Button, Form, Alert } from "@heroui/react";
 import { useRouter } from "next/navigation";
 
 export default function SignUpCard() {

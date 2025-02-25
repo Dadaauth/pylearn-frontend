@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button } from "@nextui-org/react";
+import Cookies from "js-cookie";
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button, Select, SelectItem } from "@heroui/react";
+import { Check } from "@mui/icons-material";
 
 import { Mentors } from "./definitions";
 import { fetchMentors } from "./utils";

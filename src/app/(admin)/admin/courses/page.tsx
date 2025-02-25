@@ -1,7 +1,7 @@
 "use client"
 import Cookies from "js-cookie";
-import { Alert, Button, Chip, Form, Input, Link, Modal, ModalBody, ModalContent, ModalHeader, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@nextui-org/react";
-import { Accordion, AccordionItem } from "@nextui-org/react";
+import { Alert, Button, Chip, Form, Input, Link, Modal, ModalBody, ModalContent, ModalHeader, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@heroui/react";
+import { Accordion, AccordionItem } from "@heroui/react";
 
 import AppNavBar from "@/components/ui/navbar";
 import ProtectedAdmin from "@/components/utils/ProtectedAdmin";
@@ -65,7 +65,6 @@ function AddCourse() {
                             <ModalBody>
                                 {info.message != "" &&
                                     <Alert
-                                        type={info.status}
                                         color={info.status === "success" ? "success" : "danger"}
                                         title={info.message}
                                     />
@@ -174,7 +173,6 @@ function EditCourse({course}: {course: Course}) {
                             <ModalBody>
                                 {info.message != "" &&
                                     <Alert
-                                        type={info.status}
                                         color={info.status === "success" ? "success" : "danger"}
                                         title={info.message}
                                     />
@@ -247,7 +245,6 @@ function AddCohort({ course_id }: { course_id: string }) {
                             <ModalBody>
                                 {info.message != "" &&
                                     <Alert
-                                        type={info.status}
                                         color={info.status === "success" ? "success" : "danger"}
                                         title={info.message}
                                     />

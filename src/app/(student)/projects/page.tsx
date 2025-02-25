@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Chip, ChipProps, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, getKeyValue } from "@nextui-org/react";
+import { Chip, ChipProps, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, getKeyValue } from "@heroui/react";
 import KeyboardArrowRightOutlinedIcon from '@mui/icons-material/KeyboardArrowRightOutlined';
 
 import AppNavBar from "@/components/ui/navbar";

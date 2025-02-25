@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Alert, Button, Form, Input, Select, SelectItem, Textarea, VisuallyHidden } from "@nextui-org/react";
+import { Alert, Button, Form, Input, Select, SelectItem, Textarea, VisuallyHidden } from "@heroui/react";
 import Cookies from "js-cookie";
 
 import { fetchModules } from "./utils";

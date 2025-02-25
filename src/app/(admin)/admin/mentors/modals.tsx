@@ -1,9 +1,9 @@
 "use client"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Cookies from "js-cookie";
 
-import { Alert, Button, Form, Input, Modal, ModalBody, ModalContent, ModalHeader } from "@nextui-org/react";
+import { Alert, Button, Form, Input, Modal, ModalBody, ModalContent, ModalHeader } from "@heroui/react";
 import { CreateMentorModalProps } from "./definitions";
 
 
@@ -49,7 +49,6 @@ export function MentorAdd_Modal({isOpen, onOpenChange}: CreateMentorModalProps) 
                         <ModalBody>
                             {info.message != "" &&
                                 <Alert
-                                    type={info.status}
                                     color={info.status === "success" ? "success" : "danger"}
                                     title={info.message}
                                 />

@@ -3,12 +3,12 @@ import React, { useEffect, useState } from "react";
 import { MDXRemote } from 'next-mdx-remote';
 import { MDXComponents } from "mdx/types";
 import { serialize } from 'next-mdx-remote/serialize'
-import { Form, Link, Spinner } from "@nextui-org/react";
+import { Form, Link, Spinner } from "@heroui/react";
 import CalendarViewDayOutlinedIcon from '@mui/icons-material/CalendarViewDayOutlined';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
-import { Button, Input, Alert } from "@nextui-org/react";
+import { Button, Input, Alert } from "@heroui/react";
 import { ReportOutlined } from "@mui/icons-material";
 
 import { Project } from "./definitions";
@@ -124,7 +124,6 @@ export default function Page({
                             >
                                 {info.message != "" &&
                                     <Alert
-                                        type={info.status}
                                         color={info.status === "success" ? "success" : "danger"}
                                         title={info.message}
                                         classNames={{

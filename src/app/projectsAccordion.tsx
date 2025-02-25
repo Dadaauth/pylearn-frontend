@@ -1,5 +1,5 @@
 "use client"
-import { Accordion, AccordionItem, Button, Link } from "@nextui-org/react";
+import { Accordion, AccordionItem, Button, Link } from "@heroui/react";
 import { DoneAll } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { RetrieveProjectsStatuses } from "@/utils/project";

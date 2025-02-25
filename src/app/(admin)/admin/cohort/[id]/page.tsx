@@ -6,7 +6,7 @@ import AppNavBar from "@/components/ui/navbar";
 import ProtectedAdmin from "@/components/utils/ProtectedAdmin";
 import { fetchCohortWithStudents, fetchStudentsWithNoCohortAssigned } from "./utils";
 import { Cohort, Student } from "./definitions";
-import { Alert, Button, Chip, Form, Input, Modal, ModalBody, ModalContent, ModalHeader, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@nextui-org/react";
+import { Alert, Button, Chip, Form, Input, Modal, ModalBody, ModalContent, ModalHeader, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@heroui/react";
 
 export default function Page({
     params,
@@ -103,7 +103,6 @@ function EditCohort({cohort}: {cohort: Cohort}) {
                             <ModalBody>
                                 {info.message != "" &&
                                     <Alert
-                                        type={info.status}
                                         color={info.status === "success" ? "success" : "danger"}
                                         title={info.message}
                                     />
@@ -192,7 +191,6 @@ function AddStudents({course_id, cohort_id}: {course_id: string, cohort_id: stri
                             <ModalBody>
                                 {info.message != "" &&
                                     <Alert
-                                        type={info.status}
                                         color={info.status === "success" ? "success" : "danger"}
                                         title={info.message}
                                     />

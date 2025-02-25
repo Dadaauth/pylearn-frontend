@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Code, Snippet } from "@nextui-org/react";
+import { Code, Snippet } from "@heroui/react";
 
 export function CustomH2({ children }:{ children: React.ReactNode }) {
     return <h2 className='my-4 text-xl font-bold text-[#3776AB]'>{children}</h2>

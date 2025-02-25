@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react";
-import { Input, Card, CardHeader, CardBody, CardFooter, Button, Form, Alert } from "@nextui-org/react";
+import { Input, Card, CardHeader, CardBody, CardFooter, Button, Form, Alert } from "@heroui/react";
 
 export default function SignUpCard() {
     const [info, setInfo] = useState({
@@ -43,7 +43,6 @@ export default function SignUpCard() {
                 <CardBody className="flex flex-col gap-5">
                     {info.message != "" &&
                     <Alert
-                        type={info.status}
                         color={info.status === "success" ? "success" : "danger"}
                         title={info.message}
                     />}

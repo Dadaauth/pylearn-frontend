@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 
 import { fetchCourses } from "./utils";
-import { Alert, Button } from "@nextui-org/react";
+import { Alert, Button } from "@heroui/react";
 
 interface Course {
     id: string,
@@ -77,7 +77,6 @@ export default function Page() {
                     <form onSubmit={submitForm} className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
                         {info.message != "" &&
                             <Alert
-                                type={info.status}
                                 color={info.status === "success" ? "success" : "danger"}
                                 title={info.message}
                             />

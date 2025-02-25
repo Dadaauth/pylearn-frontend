@@ -4,12 +4,12 @@ import { useRouter } from "next/navigation";
 import { MDXRemote } from 'next-mdx-remote';
 import { MDXComponents } from "mdx/types";
 import { serialize } from 'next-mdx-remote/serialize'
-import { Form, Link, Spinner, Tooltip } from "@nextui-org/react";
+import { Form, Link, Spinner, Tooltip } from "@heroui/react";
 import CalendarViewDayOutlinedIcon from '@mui/icons-material/CalendarViewDayOutlined';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import { ArrowBack, ArrowForward, EditOutlined } from "@mui/icons-material";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import Cookies from "js-cookie";
 
 import { Project } from "./definitions";

@@ -1,7 +1,7 @@
 "use client"
-import { Accordion, AccordionItem, Button, Link } from "@nextui-org/react";
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/react";
-import {Form, Input} from "@nextui-org/react";
+import { Accordion, AccordionItem, Button, Link } from "@heroui/react";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/react";
+import {Form, Input} from "@heroui/react";
 import { DoneAll } from "@mui/icons-material";
 import { FormEvent, useEffect, useState } from "react";
 import { RetrieveProjectsStatuses } from "@/utils/project";

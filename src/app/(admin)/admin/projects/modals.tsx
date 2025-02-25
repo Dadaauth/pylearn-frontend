@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useState } from "react";
-import { Button, Form, Input, Alert, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem } from "@nextui-org/react";
+import { Button, Form, Input, Alert, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem } from "@heroui/react";
 import Cookies from "js-cookie";
 import { fetchModules } from "./utils";
 
@@ -82,7 +82,6 @@ export function CreateModuleModal({isOpen, onOpenChange}: CreateModuleModalProps
                             <ModalBody>
                                 {info.message != "" &&
                                     <Alert
-                                        type={info.status}
                                         color={info.status === "success" ? "success" : "danger"}
                                         title={info.message}
                                     />
@@ -202,7 +201,6 @@ export function ModuleEditModal({ isOpen, onOpenChange, toEdit }: {
                         <ModalBody>
                             {info.message != "" &&
                                 <Alert
-                                    type={info.status}
                                     color={info.status === "success" ? "success" : "danger"}
                                     title={info.message}
                                 />

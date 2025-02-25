@@ -1,5 +1,5 @@
 "use client"
-import { Button, useDisclosure } from "@nextui-org/react";
+import { Button, useDisclosure } from "@heroui/react";
 
 import AppNavBar from "@/components/ui/navbar";
 import ProtectedAdmin from "@/components/utils/ProtectedAdmin";
