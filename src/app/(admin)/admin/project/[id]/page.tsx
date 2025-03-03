@@ -71,7 +71,10 @@ function TopSection({ project }: { project: Project }) {
             </h3>
             <p className="text-sm text-[#2B2D42] font-medium flex flex-row items-center gap-6"><CalendarViewDayOutlinedIcon /> Module: {project.module.title}</p>
             <p className="text-sm text-[#2B2D42] font-medium flex flex-row items-center gap-6"><AccessTimeOutlinedIcon /> Status: {project.status}</p>
-            <p className="text-sm text-[#2B2D42] font-medium flex flex-row items-center gap-6"><PersonOutlineOutlinedIcon /> Author: {project.author.first_name} {project.author.last_name}</p>
+            <p className="text-sm text-[#2B2D42] font-medium flex flex-row items-center gap-6"><PersonOutlineOutlinedIcon /> Author: {project.author.first_name} {project.author.last_name}</p> <br />
+            <p className="text-sm text-[#2B2D42] font-medium flex flex-row items-center gap-6"><AccessTimeOutlinedIcon /> Started: {project.fa_start_date}</p>
+            <p className="text-sm text-[#2B2D42] font-medium flex flex-row items-center gap-6"><AccessTimeOutlinedIcon /> Second Attempt: {project.sa_start_date}</p>
+            <p className="text-sm text-[#2B2D42] font-medium flex flex-row items-center gap-6"><AccessTimeOutlinedIcon /> Ends: {project.end_date}</p>
             <br />
 
             <p className="sm:max-w-xl text-[#2B2D42] font-medium text-base">{project.description}</p>

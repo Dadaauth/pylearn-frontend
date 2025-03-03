@@ -21,6 +21,9 @@ export interface Project {
         first_name: string,
         last_name: string,
     },
+    fa_start_date: string,
+    sa_start_date: string,
+    end_date: string,
     next_project_id: string,
     prev_project_id: string,
 }
