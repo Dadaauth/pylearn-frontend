@@ -51,8 +51,7 @@ export default function AppNavBar() {
                         Cookies.set("course_context", tmp[0].id);
                     }
                 }
-            } catch(err) {
-            }
+            } catch {}
         }
 
         async function fetchMentorAssignedCohorts() {
@@ -65,7 +64,6 @@ export default function AppNavBar() {
                 });
                 const tmp = (await res.json()).data.cohorts;
                 const cohort_context = Cookies.get("cohort_context")
-                console.log(tmp);
                 setCohorts(tmp);
                 if (cohort_context) setSelectedCohort(cohort_context);
                 else {
@@ -74,17 +72,16 @@ export default function AppNavBar() {
                         Cookies.set("cohort_context", tmp[0].id);
                     }
                 }
-            } catch(err) {
-            }
+            } catch {}
         }
 
         if (userRole == "admin") fetchCourses();
         if (userRole == "mentor") fetchMentorAssignedCohorts();
-    }, [])
+    }, [userRole])
 
     function logout() {
-        let cookies = Cookies.get()
-        for (let cookie in cookies)
+        const cookies = Cookies.get()
+        for (const cookie in cookies)
             Cookies.remove(cookie);
         router.push("/auth/login")
     }
@@ -174,12 +171,12 @@ export default function AppNavBar() {
                                         icon={HomeOutlinedIcon}
                                         active={currentPath == '/'}
                                     />
-                                    <DrawerItem
+                                    {userRole != "mentor" && <DrawerItem
                                         title="Projects"
-                                        link={(userRole == "admin" || userRole == "mentor")? "/admin/projects": "/projects"}
+                                        link={userRole == "admin"? "/admin/projects": "/projects"}
                                         icon={CalendarTodayIcon}
-                                        active={currentPath == ((userRole == "admin" || userRole == "mentor")? '/admin/projects': "/projects")}
-                                    />
+                                        active={currentPath == (userRole == "admin"? '/admin/projects': "/projects")}
+                                    />}
                                     {userRole == "admin" &&
                                         <>
                                             <DrawerItem
@@ -230,7 +227,7 @@ export default function AppNavBar() {
 function DrawerItem(props: {
     link: string,
     title: string,
-    // @ts-expect-error
+    // @ts-expect-error fix later
     icon: Any
     // To dertermine if to show a background color or not
     active?: boolean
