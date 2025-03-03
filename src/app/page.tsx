@@ -65,19 +65,23 @@ function MentorDashboard() {
 
 function StudentDashBoard() {
   const [progressState, setProgressState] = useState({
-    "projects": {
-      all: 0,
-      completed: 0,
-    },
-    "modules": {
-      all: 0,
-      completed: 0,
-    }
+    "projects": 0,
+    "modules": 0
   })
   useEffect(() => {
     async function fetchData() {
       const response = await countCompletedProjectsAndModules();
-      if (response) setProgressState({...response})
+      if (response) {
+        let projects = 0;
+        let modules = 0;
+
+        if (response.projects.all != 0)
+          projects = (response.projects.completed / response.projects.all) * 100
+        if (response.modules.all != 0)
+          modules = (response.modules.completed / response.modules.all) * 100
+
+        setProgressState({projects, modules})
+      }
     }
 
     fetchData();
@@ -101,7 +105,7 @@ function StudentDashBoard() {
               <Progress
                 aria-label="Loading..."
                 label="Projects Completed"
-                value={(progressState.projects.completed / progressState.projects.all) * 100}
+                value={progressState.projects}
                 classNames={{
                   indicator: "bg-[#3776AB]",
                 }}
@@ -111,7 +115,7 @@ function StudentDashBoard() {
               <Progress
                 aria-label="Loading..."
                 label="Modules Completed"
-                value={(progressState.modules.completed / progressState.modules.all) * 100}
+                value={progressState.modules}
                 classNames={{
                   indicator: "bg-[#3776AB]",
                 }}
