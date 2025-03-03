@@ -1,4 +1,16 @@
+import { fetchAPIv1 } from "@/utils/api";
 import Cookies from "js-cookie";
+
+export async function fetchData () {
+    try {
+        const course_id = Cookies.get("course_context");
+        const res = await fetchAPIv1(`/admin/${course_id}/project/new`);
+        if (res.ok) return (await res.json()).data;
+        return null;
+    } catch {
+        return null;
+    }
+}
 
 export async function fetchProjects() {
     try {
@@ -13,7 +25,7 @@ export async function fetchProjects() {
         if (res.ok) {
             return (await res.json()).data.projects;
         } else return [];
-    } catch(err) {
+    } catch {
         return [];
     }
 }
@@ -31,7 +43,7 @@ export async function fetchModules() {
         if (res.ok) {
             return (await res.json()).data.modules;
         } else return [];
-    } catch(err) {
+    } catch {
         return [];
     }
 }

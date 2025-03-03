@@ -1,47 +1,19 @@
 "use client"
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Alert, Button, Form, Input, Select, SelectItem, Textarea, VisuallyHidden } from "@heroui/react";
+import { Alert, Button, Form, Input, Select, SelectItem, VisuallyHidden } from "@heroui/react";
 import Cookies from "js-cookie";
 
-import { fetchModules, fetchProjects } from "./utils";
 import { ForwardRefEditor } from "@/components/utils/ForwardRefEditor";
-
-interface Module {
-    key: string,
-    title: string,
-}
-interface Project {
-    key: string,
-    title: string,
-    duration_in_days: number,
-}
+import { PageData } from "./definitions";
+import { fetchAPIv1 } from "@/utils/api";
 
 
-export function ProjectCreateForm() {
-    const [mode, setMode] = useState("draft");
-    const [modules, setModules] = useState<Module[]>([]);
-    const [projects, setProjects] = useState<Project[]>([]);
+
+export function ProjectCreateForm({ data }: { data: PageData}) {
     const router = useRouter();
     const [showError, setShowError] = useState(false);
     const [markdown_content, setMarkDownContent] = useState("");
-
-    useEffect(() => {
-        async function fetchData() {
-            const tmp_modules = await fetchModules();
-            const tmp_projects = await fetchProjects();
-            const mds = [];
-            for (let i = 0; i < tmp_modules.length; i++) {
-                let key = tmp_modules[i].id;
-                let title = tmp_modules[i].title;
-                mds.push({key, title});
-            }
-            setModules(mds);
-            setProjects(tmp_projects);
-        }
-
-        fetchData();
-    }, []);
 
     async function submitProjectCreateForm(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -49,27 +21,23 @@ export function ProjectCreateForm() {
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
 
-        data.mode = mode;
         if (data.prev_project_id == "")
             delete data.prev_project_id
 
         try {
             const course_id = Cookies.get("course_context");
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/create`, {
+            const res = await fetchAPIv1(`/admin/${course_id}/project/new`, undefined, {
                 method: "POST",
                 headers: {
-                    "Authorization": `Bearer ${Cookies.get("access_token")}`,
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({...data, course_id}),
+                body: JSON.stringify(data),
             });
 
-            if (res.ok) {
-                router.push("/admin/projects");
-            } else {
-                setShowError(true);
-            }
-        } catch (err) {
+            if (res.ok) router.push("/admin/projects");
+            else setShowError(true);
+
+        } catch {
             setShowError(true);
         }
     }
@@ -78,7 +46,7 @@ export function ProjectCreateForm() {
         <div className="my-6">
                 {showError &&
                     <Alert
-                        color="error"
+                        color="danger"
                         title="An Error Occured!"
                     />
                 }
@@ -90,22 +58,24 @@ export function ProjectCreateForm() {
                         <div className="flex flex-col gap-4 w-96">
                             <Select
                                 className="max-w-md"
-                                items={modules}
                                 label="Module"
                                 placeholder="Select a Module"
                                 name="module_id"
                                 isRequired
                             >
-                                {(module) => <SelectItem>{module.title}</SelectItem>}
+                                {data.modules.map((item) => {
+                                    return <SelectItem key={item.id}>{item.title}</SelectItem>
+                                })}
                             </Select>
                             <Select
                                 className="max-w-md"
-                                items={projects}
                                 label="Prev Project"
                                 placeholder="Select the previous project"
                                 name="prev_project_id"
                             >
-                                {(project) => <SelectItem>{project.title} - {project.duration_in_days} days long</SelectItem>}
+                                {data.projects.map((project) => {
+                                    return <SelectItem key={project.id}>{`${project.title} - ${project.fa_duration + project.sa_duration} days long`}</SelectItem>
+                                })}
                             </Select>
                             <Input
                                 type="text"
@@ -122,8 +92,13 @@ export function ProjectCreateForm() {
                             />
                             <Input
                                 type="number"
-                                name="duration_in_days"
-                                label="Duration Of Project"
+                                name="fa_duration"
+                                label="First Attempt Duration"
+                            />
+                            <Input
+                                type="number"
+                                name="sa_duration"
+                                label="Second Attempt Duration"
                             />
                             <Input
                                 type="number"
@@ -144,10 +119,7 @@ export function ProjectCreateForm() {
                             placeholder="insert markdown content here"
                         />
                     </div>
-                    <div className="w-full flex flex-row justify-between items-center">
-                        {/* <Button onClick={() => setMode("draft")} className="bg-[#F94144] text-white" type="submit" isDisabled>Draft</Button> */}
-                        <Button onClick={() => setMode("publish")} className="bg-[#2EC4B6] text-white" type="submit">Publish</Button>
-                    </div>
+                    <Button className="bg-[#2EC4B6] text-white" type="submit">Publish</Button>
                 </Form>
         </div>
     );

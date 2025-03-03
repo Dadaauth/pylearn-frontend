@@ -1,12 +1,11 @@
-export interface Module {
-    key: string,
-    title: string,
+export interface PageData {
+    currentProject: Project,
+    projects: Project[],
+    modules: Module[],
 }
-export interface Projects {
+export interface Module {
     id: string,
-    key: string,
     title: string,
-    duration_in_days: number,
 }
 
 export interface Project {
@@ -16,7 +15,9 @@ export interface Project {
     description: string,
     markdown_content: string,
     status: string,
-    prev_project_id: string,
-    duration_in_days: number,
+    fa_duration: number,
+    sa_duration: number,
     release_range: number,
+    prev_project_id: string,
+    next_project_id: string,
 }

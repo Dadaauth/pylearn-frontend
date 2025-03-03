@@ -3,34 +3,35 @@ import { useEffect, useState } from "react";
 import AppNavBar from "@/components/ui/navbar";
 import ProjectEditForm from "./form";
 import ProtectedAdmin from "@/components/utils/ProtectedAdmin";
-import WelcomeSection from "@/components/ui/welcomeSection";
+import { fetchData } from "./utils";
+import LoadingPage from "@/components/ui/loadingPage";
+import { PageData } from "./definitions";
 
 export default function Page({
     params,
   }: {
     params: Promise<{ id: string }>
   }) {
-    const [project_id, set_pid] = useState("");
-    const [loading, setIsLoading] = useState(true);
+    const [data, setData] = useState<PageData | null>(null);
+    const [loading, setLoading] = useState(true);
     useEffect(() => {
-        async function getProjectDetails() {
-            if (!loading) return;
-            set_pid((await params).id)
-            setIsLoading(false);
-        }
-        getProjectDetails();
-    }, [project_id]);
+        fetchData(params).then((result) => {
+            setData(result);
+            setLoading(false);
+        })
+    }, [params]);
+
+    if (loading) return <LoadingPage />
+    if (!data) return <p>Error loading page!</p>
     return (
         <>
             <AppNavBar />
             <ProtectedAdmin>
                 <div className="mx-6">
                     <h3 className="font-bold text-[#3776AB] text-lg">Edit Project</h3>
-                    {!loading &&
                     <ProjectEditForm
-                        project_id={project_id}
+                        data={data}
                     />
-                    }
                 </div>
             </ProtectedAdmin>
         </>

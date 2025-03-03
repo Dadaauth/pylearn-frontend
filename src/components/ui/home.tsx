@@ -16,9 +16,9 @@ export function CurrentProjectsCard() {
     useEffect(() => {
       async function fetchData() {
         const pjts = await fetchCurrentProjectsForStudent();
-        let projects = [];
+        const projects = [];
         for (let i = 0; i < pjts.length; i++) {
-          let project = pjts[i];
+          const project = pjts[i];
           projects.push({id: project.id, title: project.title})
         }
         setCurrentProjects(projects);
@@ -72,8 +72,9 @@ export function DashboardCard(props: {
         {props.data?
             <div className="border-2 rounded-b-[10px] min-h-[40px] px-3 max-h-[180px] overflow-scroll overflow-x-hidden">
             <div className="my-2 flex flex-col gap-2">
-                {props.data.map((data) => {
+                {props.data.map((data, idx) => {
                 return <CardItem
+                    key={idx}
                     title={data.title}
                     id={data.id}
                 />

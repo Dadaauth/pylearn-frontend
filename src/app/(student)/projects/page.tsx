@@ -1,24 +1,39 @@
 "use client"
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Chip, ChipProps, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, getKeyValue } from "@heroui/react";
+import { Chip, ChipProps, Pagination, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@heroui/react";
 import KeyboardArrowRightOutlinedIcon from '@mui/icons-material/KeyboardArrowRightOutlined';
 
 import AppNavBar from "@/components/ui/navbar";
-import WelcomeSection from "@/components/ui/welcomeSection";
 import ProtectedRoute from "@/components/utils/protected";
-import { Project, Module } from "./definitions";
-import { fetchModules } from "./utils";
+import { PageData, Project, Module } from "./definitions";
+import { fetchData } from "./utils";
+import LoadingPage from "@/components/ui/loadingPage";
 
 export default function Page() {
-    const [projects, setProjects] = useState<Project[]>([]);
+    const [data, setData] = useState<PageData | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [projects, setProjects] = useState<Project[] | []>([]);
+
+    useEffect(() => {
+        fetchData().then((result) => {
+            setData(result);
+            console.log(result);
+            setLoading(false);
+        })
+    }, []);
+
+
+    if (loading) return <LoadingPage />
+    if (!data) return <p>Error Loading Page!</p>
     return (
         <>
             <AppNavBar />
             <ProtectedRoute>
-                <div className="mx-6 sm:flex flex-row gap-16">
+                <div className="mx-6 flex flex-col justify-center gap-10">
                     <ModulesTable
                         setProjects={setProjects}
+                        modules={data.modules}
                     />
                     <ProjectsTable
                         projects={projects}
@@ -30,36 +45,24 @@ export default function Page() {
 }
 
 function ModulesTable(props: {
-    setProjects: React.Dispatch<React.SetStateAction<Project[]>>
+    setProjects: React.Dispatch<React.SetStateAction<Project[] | []>>,
+    modules: Module[],
 }) {
-    const [modules, setModules] = useState<Module[]>([]);
+    const [page, setPage] = useState(1);
+    const rowsPerPage = 4;
 
-     useEffect(() => {
-        async function fetchData() {
-            const tmp = await fetchModules();
-            const mds = [];
-            for (let i = 0; i < tmp.length; i++) {
-                let id = tmp[i].id;
-                let title = tmp[i].title;
-                let projects = tmp[i].projects;
-                let status = tmp[i].status;
-                let description = tmp[i].description;
-                mds.push({id, title, projects, status, description});
-            }
-            setModules(mds);
-        }
+    const pages = Math.ceil(props.modules.length / rowsPerPage);
 
-        fetchData();
-    }, []);
+    const items = useMemo(() => {
+        const start = (page - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
 
+        return props.modules.slice(start, end);
+    }, [page, props.modules]);
     const columns = [
         {
             key: "name",
             label: "MODULE NAME"
-        },
-        {
-            key: "status",
-            label: "STATUS"
         },
         {
             key: "action",
@@ -67,33 +70,35 @@ function ModulesTable(props: {
         }, 
     ]
 
-    const statusColorMap: Record<string, ChipProps["color"]> = {
-        completed: "success",
-        released: "warning",
-        locked: "danger"
-    }
     return (
         <div>
-            <h2 className="text-[#2B2D42] font-bold">Modules</h2>
-            <Table className="mt-4" aria-label="Table containing project modules">
+            <h2 className="text-[#2B2D42] font-bold mb-4">Modules</h2>
+            <Table className="" aria-label="Table containing project modules" isStriped
+                bottomContent={
+                <div className="flex w-full justify-center">
+                    <Pagination
+                    isCompact
+                    showControls
+                    showShadow
+                    color="default"
+                    page={page}
+                    total={pages}
+                    onChange={(page) => setPage(page)}
+                    />
+                </div>
+                }
+                classNames={{
+                    wrapper: "min-h-[222px]",
+                }}                    
+            >
                 <TableHeader columns={columns}>
                     {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
                 </TableHeader>
                 <TableBody emptyContent={"No modules to display"}>
-                    {modules.map((item) => {
+                    {items.map((item) => {
                         return (
                             <TableRow key={item.id}>
                                 <TableCell>{item.title}</TableCell>
-                                <TableCell>
-                                    <Chip
-                                        className="capitalize"
-                                        color={statusColorMap[item.status]}
-                                        size="sm"
-                                        variant="dot"
-                                    >
-                                        {item.status}
-                                    </Chip>
-                                </TableCell>
                                 <TableCell>
                                     <Chip
                                         endContent={<KeyboardArrowRightOutlinedIcon />}
@@ -117,6 +122,17 @@ function ProjectsTable(props: {
     projects: Project[]
 }) {
     const router = useRouter();
+    const [page, setPage] = useState(1);
+    const rowsPerPage = 4;
+
+    const pages = Math.ceil(props.projects.length / rowsPerPage);
+
+    const items = useMemo(() => {
+        const start = (page - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+
+        return props.projects.slice(start, end);
+    }, [page, props.projects]);
     const columns = [
         {
             key: "name",
@@ -138,23 +154,34 @@ function ProjectsTable(props: {
         graded: "success",
         verified: "success",
         released: "warning",
-        locked: "danger"
-    }
-
-    function OpenProject(id: string, status: string) {
-        if (status != "locked")
-            router.push(`/project/${id}`)
     }
     return (
         <div>
-            <h2 className="text-[#2B2D42] font-bold">Projects</h2>
-            <Table className="mt-4" aria-label="Table containing project modules">
+            <h2 className="text-[#2B2D42] font-bold mb-4">Projects</h2>
+            <Table className="" aria-label="Table containing project modules" isStriped
+                bottomContent={
+                <div className="flex w-full justify-center">
+                    <Pagination
+                    isCompact
+                    showControls
+                    showShadow
+                    color="default"
+                    page={page}
+                    total={pages}
+                    onChange={(page) => setPage(page)}
+                    />
+                </div>
+                }
+                classNames={{
+                    wrapper: "min-h-[222px]",
+                }}                
+            >
                 <TableHeader columns={columns}>
                     {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
                 </TableHeader>
                 {props.projects ? (
                     <TableBody emptyContent={"No projects to display"}>
-                        {props.projects.map((item) => {
+                        {items.map((item) => {
                             return (
                                 <TableRow key={item.id}>
                                     <TableCell>{item.title}</TableCell>
@@ -172,8 +199,7 @@ function ProjectsTable(props: {
                                         <Chip
                                             endContent={<KeyboardArrowRightOutlinedIcon />}
                                             className="cursor-pointer"
-                                            onClick={() => OpenProject(item.id, item.status)}
-                                            isDisabled={!(item.status != "locked")}
+                                            onClick={() => router.push(`/project/${item.id}`)}
                                         >
                                             Open
                                         </Chip>

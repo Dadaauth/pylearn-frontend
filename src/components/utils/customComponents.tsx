@@ -1,20 +1,33 @@
 import React from "react";
 import Link from "next/link";
-import { Code, Snippet } from "@heroui/react";
+import { Snippet } from "@heroui/react";
+import { MDXComponents } from "mdx/types";
 
-export function CustomH2({ children }:{ children: React.ReactNode }) {
+
+export const overrideComponents: MDXComponents = {
+  h2: (props) => <CustomH2 {...props}>{props.children}</CustomH2>,
+  p: (props) => <CustomP {...props}>{props.children}</CustomP>,
+  ul: (props) => <CustomUL {...props}>{props.children}</CustomUL>,
+  a: (props) => <CustomLink {...props} href={props.href || "#"}>{props.children}</CustomLink>,
+  code: (props) => <CustomCODE {...props}>{props.children}</CustomCODE>,
+  pre: (props) => <CustomPRE {...props}>{props.children}</CustomPRE>,
+}
+
+
+
+function CustomH2({ children }:{ children: React.ReactNode }) {
     return <h2 className='my-4 text-xl font-bold text-[#3776AB]'>{children}</h2>
 }
 
-export function CustomP({ children }: { children: React.ReactNode }) {
+function CustomP({ children }: { children: React.ReactNode }) {
     return <p className="text-small text-[#2B2D42] font-medium max-w-xl">{children}</p>
 }
 
-export function CustomUL({ children }: { children: React.ReactNode }) {
+function CustomUL({ children }: { children: React.ReactNode }) {
     return <ul className="mt-4 text-small text-[#2B2D42] font-medium max-w-xl list-disc list-inside">{children}</ul>
 }
 
-export const CustomLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
+const CustomLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
     const isInternalLink = href.startsWith("/");
   
     if (isInternalLink) {
@@ -30,7 +43,7 @@ export const CustomLink = ({ href, children }: { href: string; children: React.R
     );
 };
 
-export function CustomPRE({ children }: { children: React.ReactNode }) {
+function CustomPRE({ children }: { children: React.ReactNode }) {
     const content = React.Children.map(children, (child: React.ReactNode) => {
         if (typeof child === "string") {
           return child;
@@ -53,6 +66,6 @@ export function CustomPRE({ children }: { children: React.ReactNode }) {
     </Snippet>
 }
 
-export const CustomCODE = (props: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>) => {
+const CustomCODE = (props: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>) => {
   return <code {...props}>{props.children}</code>;
 };

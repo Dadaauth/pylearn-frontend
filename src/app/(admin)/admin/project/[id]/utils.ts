@@ -1,47 +1,13 @@
-import Cookies from "js-cookie"
+import { fetchAPIv1 } from "@/utils/api";
 
-export async function fetchProjectDetails(project_id: string) {
 
-    if (!project_id)
-        return {
-            id: "",
-            title: "",
-            description: "",
-            markdown_content: "",
-            status: "",
-            module: "",
-            author: "",
-        }
-
+export async function fetchData(params: Promise<{ id: string }>) {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/${project_id}`, {
-            headers: {
-                "Authorization": `Bearer ${Cookies.get("access_token")}`
-            }
-        });
-
-        if (res.ok) {
-            return (await res.json()).data.project
-        } else {
-            return {
-                id: "",
-                title: "",
-                description: "",
-                markdown_content: "",
-                status: "",
-                module: "",
-                author: "",
-            }
-        }
-    } catch(err) {
-        return {
-            id: "",
-            title: "",
-            description: "",
-            markdown_content: "",
-            status: "",
-            module: "",
-            author: "",
-        }
+        const project_id = (await params).id;
+        const res = await fetchAPIv1(`/admin/project/${project_id}`);
+        if (res.ok) return (await res.json()).data;
+        return null;
+    } catch {
+        return null;
     }
 }

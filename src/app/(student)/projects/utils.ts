@@ -1,20 +1,13 @@
-import Cookies from "js-cookie"
+import { fetchAPIv1 } from "@/utils/api";
 
 
-export async function fetchModules() {
+export async function fetchData() {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/student/modules`, {
-            headers: {
-                "Authorization": `Bearer ${Cookies.get("access_token")}`
-            }
-        });
-
+        const res = await fetchAPIv1('/student/projects')
         if (res.ok) {
-            return (await res.json()).data.modules;
-        } else {
-            return [];
-        }
-    } catch (err) {
-        return [];
+            return (await res.json()).data;
+        } else return null;
+    } catch {
+        return null;
     }
 }

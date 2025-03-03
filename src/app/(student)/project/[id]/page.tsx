@@ -1,7 +1,6 @@
 "use client"
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { MDXRemote } from 'next-mdx-remote';
-import { MDXComponents } from "mdx/types";
 import { serialize } from 'next-mdx-remote/serialize'
 import { Form, Link, Spinner } from "@heroui/react";
 import CalendarViewDayOutlinedIcon from '@mui/icons-material/CalendarViewDayOutlined';
@@ -11,88 +10,105 @@ import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import { Button, Input, Alert } from "@heroui/react";
 import { ReportOutlined } from "@mui/icons-material";
 
-import { Project } from "./definitions";
-import { fetchProjectDetails, submitProject } from "./utils";
+import { submitProject } from "./utils";
+import { Project, PageData, MarkDownContent } from "./definitions";
 import AppNavBar from "@/components/ui/navbar";
 import ProtectedRoute from "@/components/utils/protected";
-import { CustomCODE, CustomH2, CustomLink, CustomP, CustomPRE, CustomUL } from "./customComponents";
+import { overrideComponents } from "@/components/utils/customComponents";
+import { fetchAPIv1 } from "@/utils/api";
+import LoadingPage from "@/components/ui/loadingPage";
 
-const overrideComponents: MDXComponents = {
-    h2: (props) => <CustomH2 {...props}>{props.children}</CustomH2>,
-    p: (props) => <CustomP {...props}>{props.children}</CustomP>,
-    ul: (props) => <CustomUL {...props}>{props.children}</CustomUL>,
-    a: (props) => <CustomLink {...props} href={props.href || "#"}>{props.children}</CustomLink>,
-    code: (props) => <CustomCODE {...props}>{props.children}</CustomCODE>,
-    pre: (props) => <CustomPRE {...props}>{props.children}</CustomPRE>,
-}
 
 export default function Page({
     params,
   }: {
     params: Promise<{ id: string }>
   }) {
-    const [info, setInfo] = useState({
-        status: "",
-        message: ""
-    });
-    const [project, setProject] = useState<Project>({
-        id: "",
-        title: "",
-        description: "",
-        status: "",
-        module: "",
-        author: "",
-        grade: "",
-        next_project: {
-            id: "",
-            status: "",
-        },
-        prev_project: {
-            id: "",
-            status: "",
-        },
-    });
-    const [markdownContent, setMarkdownContent] = useState<{ compiledSource?: string | undefined; scope?: Record<string, unknown> | undefined; frontmatter?: Record<string, unknown> | undefined; }>()
+    const [data, setData] = useState<PageData | null>(null);
+    const [loading, setLoading] = useState(true);
+    const fetched = useRef(false);
 
     useEffect(() => {
-        async function fetchData() {
-            const project_id = (await params).id
-            const pjt = await fetchProjectDetails(project_id);
+        if (fetched.current) return;
+        fetched.current = true;
 
-            let next_pjt = await fetchProjectDetails(pjt.next_project_id);
-            let prev_pjt = await fetchProjectDetails(pjt.prev_project_id);
+        fetchData(params).then((result) => {
+            setData(result);
+            setLoading(false);
+        });
+    }, [params]);
 
-            let id = pjt.id;
-            let title = pjt.title;
-            let description = pjt.description;
-            setMarkdownContent(await serialize(pjt.markdown_content));
-            let status = pjt.status
-            let module = pjt.module;
-            let author = pjt.author;
-            let grade = pjt.grade;
-            let next_project = {
-                id: next_pjt.id,
-                status: next_pjt.status,
-            };
-            let prev_project = {
-                id: prev_pjt.id,
-                status: prev_pjt.status,
-            };
-            setProject({id, title, description, status, module, author, next_project, prev_project, grade});
-        }
+    if (loading) return <LoadingPage />
+    if(!data) return <p className="text-lg">Project not found</p>
 
-        fetchData();
-    }, [])
+    return (
+        <>
+            <AppNavBar />
+            <ProtectedRoute>
+                <div className="mx-6">
+                    <TopSection project={data.project} />
+                    <MarkdownSection md={data.project.markdown_content} />
+                    <ProjectSubmitSection project_id={data.project.id} />
+                    <ProjectNavigationSection data={data} />
+                </div>
+            </ProtectedRoute>
+        </>
+    );
+}
+
+
+const fetchData = async (params: Promise<{ id: string }>) => {
+    try {
+        const projectID = (await params).id
+        const response =  await fetchAPIv1(`/student/project/${projectID}`);
+        if (response.ok)
+            return (await response.json()).data;
+        else return null
+    } catch(_err) {
+        console.log(_err);
+        return null;
+    }
+}
+
+function TopSection({ project }: { project: Project }) {
+    return (
+        <div>
+            <h3 className="my-4 text-2xl font-bold text-[#3776AB]">{project.title}</h3>
+            <p className="text-sm text-[#2B2D42] font-medium flex flex-row items-center gap-6"><CalendarViewDayOutlinedIcon /> Module: {project.module.title}</p>
+            <p className="text-sm text-[#2B2D42] font-medium flex flex-row items-center gap-6"><AccessTimeOutlinedIcon /> Status: {project.status}</p>
+            <p className="text-sm text-[#2B2D42] font-medium flex flex-row items-center gap-6"><PersonOutlineOutlinedIcon /> Author: {project.author.first_name} {project.author.last_name}</p>
+            {project.studentProject?.grade && <p className="text-sm text-[#2B2D42] font-medium flex flex-row items-center gap-6"><ReportOutlined /> Grade: {project.studentProject.grade}</p>}
+            {project.studentProject?.feedback && <p className="text-sm text-[#2B2D42] font-medium flex flex-row items-center gap-6"><ReportOutlined /> Feedback: {project.studentProject.feedback}</p>}
+            <br />
+
+            <p className="sm:max-w-xl text-[#2B2D42] font-medium text-base">{project.description}</p>
+        </div>
+    );
+}
+
+function MarkdownSection({ md }: { md: string }) {
+    const [markdownContent, setMarkdownContent] = useState<MarkDownContent>()
+    useEffect(() => {(async () => {setMarkdownContent(await serialize(md))})()}, [md])
+    
+    if (!markdownContent) return <Spinner />
+    return (
+        <MDXRemote compiledSource={markdownContent?.compiledSource || ""} components={overrideComponents} scope={markdownContent?.scope} frontmatter={markdownContent?.frontmatter} />
+    );
+}
+
+function ProjectSubmitSection({ project_id }: { project_id: string }) {
+    const [info, setInfo] = useState({ status: "", message: "" });
 
     async function handleProjectSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         const form = e.currentTarget;
         const formData = new FormData(form);
         const data = {
-            project_id: project.id as string,
+            project_id,
             submission_file: formData.get("submission_file") as string,
         };
         const res = await submitProject(data);
+
         if (res)
             setInfo({status: "success", message: "Project Submitted Successfully!"});
         else
@@ -100,78 +116,63 @@ export default function Page({
     }
 
     return (
-        <>
-            <AppNavBar />
-            <ProtectedRoute>
-                <div className="mx-6">
-                    <div className="my-6">
-                        <h3 className="my-4 text-2xl font-bold text-[#3776AB]">{project.title}</h3>
-                        <p className="text-sm text-[#2B2D42] font-medium flex flex-row items-center gap-6"><CalendarViewDayOutlinedIcon /> Module: {project.module}</p>
-                        <p className="text-sm text-[#2B2D42] font-medium flex flex-row items-center gap-6"><AccessTimeOutlinedIcon /> Status: {project.status}</p>
-                        <p className="text-sm text-[#2B2D42] font-medium flex flex-row items-center gap-6"><PersonOutlineOutlinedIcon /> Author: {project.author}</p>
-                        {project.grade && <p className="text-sm text-[#2B2D42] font-medium flex flex-row items-center gap-6"><ReportOutlined /> Grade: {project.grade}</p>}
-                        <br />
-
-                        <p className="sm:max-w-xl text-[#2B2D42] font-medium text-base">{project.description}</p>
-
-                        {markdownContent?.compiledSource ? <MDXRemote compiledSource={markdownContent.compiledSource} components={overrideComponents} scope={markdownContent.scope} frontmatter={markdownContent.frontmatter} /> : <Spinner />}
-
-                        <div className="my-4">
-                            <p className="text-[#2B2D42] font-medium text-base">Submit a URL to a Google Docs file here (max 300 chars):</p>
-                            <Form
-                                onSubmit={handleProjectSubmit}
-                                validationBehavior="native"
-                            >
-                                {info.message != "" &&
-                                    <Alert
-                                        color={info.status === "success" ? "success" : "danger"}
-                                        title={info.message}
-                                        classNames={{
-                                            "base": "max-w-md",
-                                        }}
-                                    />
-                                }
-                                <div className="max-w-xl w-full flex flex-row gap-3 items-center">
-                                    <Input
-                                        type="url"
-                                        name="submission_file"
-                                        placeholder="https://"
-                                        defaultValue="https://"
-                                        maxLength={300}
-                                        isRequired
-                                    />
-                                    <Button
-                                        className="bg-[#2EC4B6] text-white"
-                                        type="submit"
-                                    >
-                                        Submit
-                                    </Button>
-                                </div>
-                            </Form>
-                        </div>
-                        <div className="flex flex-row justify-between mt-6">
-                            <Button
-                                as={Link}
-                                href={`/project/${project.prev_project.id}`}
-                                size="sm"
-                                className="bg-[#3776AB] text-white"
-                                isDisabled={!(Boolean(project.prev_project.id) && (project.prev_project.status != "locked"))}
-                            >
-                                <ArrowBack /> Prev Project
-                            </Button>
-                            <Button
-                                as={Link}
-                                href={`/project/${project.next_project.id}`}
-                                size="sm"
-                                className="bg-[#3776AB] text-white"
-                                isDisabled={!(Boolean(project.next_project.id) && (project.next_project.status != "locked"))}
-                            >
-                                Next Project <ArrowForward />
-                            </Button>
-                        </div>
-                    </div>
+        <div className="my-4">
+            <p className="text-[#2B2D42] font-medium text-base">Submit a URL to a Google Docs file here (max 300 chars):</p>
+            <Form
+                onSubmit={handleProjectSubmit}
+                validationBehavior="native"
+            >
+                {info.message != "" &&
+                    <Alert
+                        color={info.status === "success" ? "success" : "danger"}
+                        title={info.message}
+                        classNames={{
+                            "base": "max-w-md",
+                        }}
+                    />
+                }
+                <div className="max-w-xl w-full flex flex-row gap-3 items-center">
+                    <Input
+                        type="url"
+                        name="submission_file"
+                        placeholder="https://"
+                        defaultValue="https://"
+                        maxLength={300}
+                        isRequired
+                    />
+                    <Button
+                        className="bg-[#2EC4B6] text-white"
+                        type="submit"
+                    >
+                        Submit
+                    </Button>
                 </div>
-            </ProtectedRoute>
-        </>
+            </Form>
+        </div>
+    );
+}
+
+function ProjectNavigationSection({ data }: { data: PageData }) {
+    return (
+        <div className="flex flex-row justify-between mt-6">
+            <Button
+                as={Link}
+                href={`/project/${data.project.prev_project_id}`}
+                size="sm"
+                className="bg-[#3776AB] text-white"
+                isDisabled={!Boolean(data.prev_project)}
+            >
+                <ArrowBack /> Prev Project
+            </Button>
+            <Button
+                as={Link}
+                href={`/project/${data.project.next_project_id}`}
+                size="sm"
+                className="bg-[#3776AB] text-white"
+                isDisabled={!Boolean(data.next_project)}
+            >
+                Next Project <ArrowForward />
+            </Button>
+        </div>
     );
 }

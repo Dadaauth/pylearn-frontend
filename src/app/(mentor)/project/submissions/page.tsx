@@ -5,7 +5,6 @@ import { Alert, Select, SelectItem } from "@heroui/react";
 import Cookies from "js-cookie";
 
 import AppNavBar from "@/components/ui/navbar";
-import WelcomeSection from "@/components/ui/welcomeSection";
 import ProtectedMentor from "@/components/utils/protectedMentor";
 import { generateStudentSubmission, i_RefreshSubmissionTable, retrieve_projects_with_submissions } from "./utils";
 import { Project, StudentSubmissions } from "./definitions";
@@ -23,11 +22,12 @@ export default function Page() {
     useEffect(() => {
         async function fetchData() {
             const pjts = await retrieve_projects_with_submissions();
+            console.log(pjts);
             const projects = [];
             for (let i = 0; i < pjts.length; i++) {
-                let id = pjts[i].id;
-                let title = pjts[i].title;
-                let description = pjts[i].description;
+                const id = pjts[i].id;
+                const title = pjts[i].title;
+                const description = pjts[i].description;
                 projects.push({id, title, description});
             }
             setProjectsWithSubmission(projects);
@@ -62,13 +62,13 @@ export default function Page() {
         const res = await i_RefreshSubmissionTable(selectedProjectID)
 
         if (res) {
-            let project_title = res.project.title;
-            let entries = [];
+            const project_title = res.project.title;
+            const entries = [];
             for (let i = 0; i < res.data.length; i++) {
-                let student_name = `${res.data[i].student.first_name} ${res.data[i].student.last_name}`;
-                let submission_date = res.data[i].student_project.submitted_on;
-                let submission_file = res.data[i].student_project.submission_file;
-                let student_project_id = res.data[i].student_project.id;
+                const student_name = `${res.data[i].student.first_name} ${res.data[i].student.last_name}`;
+                const submission_date = res.data[i].student_project.submitted_on;
+                const submission_file = res.data[i].student_project.submission_file;
+                const student_project_id = res.data[i].student_project.id;
                 entries.push({project_title, student_name, submission_date, submission_file, student_project_id})
             }
             setStudentsSubmissionData(entries);
@@ -170,13 +170,15 @@ function ProjectSubmissionsTable(props: {
     );
 }
 
-// @ts-expect-error
+// @ts-expect-error fix later
 function GradeProjectModal({isOpen, onOpenChange, projectData}) {
     const [gradeButtonLoading, setGradeButtonLoading] = useState(false);
-    const [info, setInfo] = useState({
+    const [info, setInfo] = useState<{
+        message: string;
+        type: "success" | "danger" | "default" | "primary" | "secondary" | "warning" | undefined;
+    }>({
         message: "",
-        // success || danger
-        type: ""
+        type: undefined
     });
 
     async function submitGrade(e:  React.FormEvent<HTMLFormElement>) {
@@ -201,7 +203,7 @@ function GradeProjectModal({isOpen, onOpenChange, projectData}) {
     
             if (res.ok) setInfo({type: "success", message: "Grading Successful!"})
             else setInfo({type: "danger", message: "An error Occured!"});
-        } catch(err) {
+        } catch {
             setInfo({type: "danger", message: "An error Occured!"});
         } finally {
             setGradeButtonLoading(false);
@@ -214,7 +216,7 @@ function GradeProjectModal({isOpen, onOpenChange, projectData}) {
             onOpenChange={onOpenChange}
         >
             <ModalContent>
-                {(onClose) => (
+                {() => (
                     <>
                         <ModalHeader>Grade {projectData.student_name}</ModalHeader>
                         <ModalBody>

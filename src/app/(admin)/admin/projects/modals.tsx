@@ -1,18 +1,9 @@
 "use client"
-import { useEffect, useState } from "react";
-import { Button, Form, Input, Alert, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem } from "@heroui/react";
+import { useState } from "react";
+import { Button, Form, Input, Alert, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/react";
 import Cookies from "js-cookie";
-import { fetchModules } from "./utils";
+import { fetchAPIv1 } from "@/utils/api";
 
-interface Module {
-    key: string,
-    title: string,
-    projects: Project[],
-}
-interface Project {
-    key: string,
-    title: string,
-}
 
 interface CreateModuleModalProps {
     isOpen: boolean;
@@ -37,21 +28,18 @@ export function CreateModuleModal({isOpen, onOpenChange}: CreateModuleModalProps
         }
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/module/create`, {
+            const res = await fetchAPIv1("/module/create", undefined, {
                 method: "POST",
                 headers: {
-                    "Authorization": `Bearer ${Cookies.get("access_token")}`,
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({...data, course_id})
             });
 
-            if (res.ok) {
-                setInfo({status: "success", message: "Module Created Successfully!"});
-            } else {
-                setInfo({status: "fail", message: "An Error Occured!"});
-            }
-        } catch (err) {
+            if (res.ok) setInfo({status: "success", message: "Module Created Successfully!"});
+            else setInfo({status: "fail", message: "An Error Occured!"});
+
+        } catch {
             setInfo({status: "fail", message: "An Error Occured!"});
         } finally {
             setIsLoading(false)
@@ -61,7 +49,7 @@ export function CreateModuleModal({isOpen, onOpenChange}: CreateModuleModalProps
         <>
             <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
                 <ModalContent>
-                    {(onClose) => (
+                    {() => (
                         <>
                             <ModalHeader>Create a new Module</ModalHeader>
                             <ModalBody>
@@ -109,24 +97,6 @@ export function ModuleEditModal({ isOpen, onOpenChange, toEdit }: {
         status: "",
         message: ""
     });
-    const [modules, setModules] = useState<{key: string, title: string}[]>([]);
-
-    useEffect(() => {
-        async function fetchData() {
-            const tmp = await fetchModules();
-            const mds = [];
-            for (let i = 0; i < tmp.length; i++) {
-                if (tmp[i].id == toEdit.id)
-                    continue
-                let key = tmp[i].id;
-                let title = tmp[i].title;
-                mds.push({key, title});
-            }
-            setModules(mds);
-        }
-
-        fetchData();
-    }, [toEdit])
 
     async function handleEditModuleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -151,7 +121,7 @@ export function ModuleEditModal({ isOpen, onOpenChange, toEdit }: {
             } else {
                 setInfo({"status": "fail", "message": "An Error Occured!"});
             }
-        } catch (err) {
+        } catch {
             setInfo({"status": "fail", "message": "An Error Occured!"});
         } finally {
             setIsLoading(false);
@@ -166,7 +136,7 @@ export function ModuleEditModal({ isOpen, onOpenChange, toEdit }: {
             onOpenChange={onOpenChange}
         >
             <ModalContent>
-                {(onClose) => (
+                {() => (
                     <>
                         <ModalHeader>
                             Editing Module - {toEdit.title}
@@ -208,10 +178,10 @@ export function ModuleEditModal({ isOpen, onOpenChange, toEdit }: {
     );
 }
 
-export function DeleteModal({ isOpen, onOpenChange, toDelete }: {
+export function ProjectDeleteModal({ isOpen, onOpenChange, toDelete }: {
     isOpen: boolean,
     onOpenChange: (isOpen: boolean) => void,
-    toDelete: { type: string, id: string, title: string }
+    toDelete: { id: string, title: string }
 }) {
     return (
         <Modal
@@ -219,14 +189,14 @@ export function DeleteModal({ isOpen, onOpenChange, toDelete }: {
             onOpenChange={onOpenChange}
         >
             <ModalContent>
-                {(onClose) => (
+                {() => (
                     <>                    
                         <ModalHeader>
-                            Delete {toDelete.type} - {toDelete.title}?
+                            Delete Project - {toDelete.title}?
                         </ModalHeader>
                         <ModalBody>
                             <p>
-                                Are you sure you want to delete {toDelete.type} - {toDelete.title}?
+                                Are you sure you want to delete project - {toDelete.title}?
                             </p>
                             <p>
                                 To proceed, please enter [{toDelete.id}] below:
@@ -236,7 +206,48 @@ export function DeleteModal({ isOpen, onOpenChange, toDelete }: {
                             <div className="w-full flex flex-row gap-3 items-center">
                                 <Input
                                     type="text"
-                                    label={`${toDelete.type} ID`}
+                                    label="Project ID"
+                                    name="ID"
+                                />
+                                <Button>Submit</Button>
+                            </div>
+                        </ModalFooter>
+                    </>
+                )}
+            </ModalContent>
+        </Modal>
+    );
+}
+
+export function ModuleDeleteModal({ isOpen, onOpenChange, toDelete }: {
+    isOpen: boolean,
+    onOpenChange: (isOpen: boolean) => void,
+    toDelete: { id: string, title: string }
+}) {
+    return (
+        <Modal
+            isOpen={isOpen}
+            onOpenChange={onOpenChange}
+        >
+            <ModalContent>
+                {() => (
+                    <>                    
+                        <ModalHeader>
+                            Delete Module - {toDelete.title}?
+                        </ModalHeader>
+                        <ModalBody>
+                            <p>
+                                Are you sure you want to delete Module - {toDelete.title}?
+                            </p>
+                            <p>
+                                To proceed, please enter [{toDelete.id}] below:
+                            </p>
+                        </ModalBody>
+                        <ModalFooter>
+                            <div className="w-full flex flex-row gap-3 items-center">
+                                <Input
+                                    type="text"
+                                    label="Module ID"
                                     name="ID"
                                 />
                                 <Button>Submit</Button>

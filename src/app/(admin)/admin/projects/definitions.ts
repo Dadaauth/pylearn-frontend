@@ -1,3 +1,7 @@
+export interface PageData {
+    modules: Module[]
+}
+
 export interface Module {
     id: string,
     title: string,

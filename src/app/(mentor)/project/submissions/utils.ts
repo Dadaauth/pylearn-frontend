@@ -3,8 +3,9 @@ import Cookies from "js-cookie"
 export async function retrieve_projects_with_submissions() {
     // This function will retrieve data to be displayed in
     // the projects dropdown
+    const cohort_id = Cookies.get("cohort_context");
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/projects/with_submissions`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/project/${cohort_id}/projects/with_submissions`, {
             headers: {
                 "Authorization": `Bearer ${Cookies.get("access_token")}`,
             },

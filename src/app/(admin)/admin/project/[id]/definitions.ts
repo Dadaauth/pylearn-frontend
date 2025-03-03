@@ -1,17 +1,33 @@
 
+export interface MarkDownContent {
+    compiledSource?: string | undefined,
+    scope?: Record<string, unknown> | undefined,
+    frontmatter?: Record<string, unknown> | undefined,
+}
 export interface Project {
     id: string,
     title: string,
     description: string,
     status: string,
-    module: string,
-    author: string,
-    next_project: {
-        id: string,
-        status: string,
+    markdown_content: string,
+    module: {
+        title: string,
     },
-    prev_project: {
-        id: string,
-        status: string,
+    studentProject: {
+        grade: number,
+        feedback: string,
     },
+    author: {
+        first_name: string,
+        last_name: string,
+    },
+    next_project_id: string,
+    prev_project_id: string,
+}
+
+
+export interface PageData {
+    project: Project,
+    next_project: Project,
+    prev_project: Project,
 }
