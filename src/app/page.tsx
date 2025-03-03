@@ -8,7 +8,6 @@ import AppNavBar from "@/components/ui/navbar";
 import ProtectedRoute from "@/components/utils/protected";
 import ProtectedAdmin from "@/components/utils/ProtectedAdmin";
 import ProtectedMentor from "@/components/utils/protectedMentor";
-import WelcomeSection from "@/components/ui/welcomeSection";
 import { countCompletedProjectsAndModules } from "./utils";
 import { CurrentProjectsCard, DashboardCard } from "@/components/ui/home";
 
@@ -77,7 +76,7 @@ function StudentDashBoard() {
   })
   useEffect(() => {
     async function fetchData() {
-      let response = await countCompletedProjectsAndModules();
+      const response = await countCompletedProjectsAndModules();
       if (response) setProgressState({...response})
     }
 
