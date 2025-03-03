@@ -110,7 +110,7 @@ export default function Page() {
                         >
                             Refresh
                         </Button>
-                        {selectedProjectID != '' &&
+                        {selectedProjectID != '' && selectedProjectID != undefined &&
                             <Button
                                 className="bg-[#3776AB] text-white"
                                 as={Link}
