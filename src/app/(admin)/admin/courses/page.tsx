@@ -1,6 +1,6 @@
 "use client"
 import Cookies from "js-cookie";
-import { Alert, Button, Chip, Form, Input, Link, Modal, ModalBody, ModalContent, ModalHeader, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@heroui/react";
+import { Alert, Button, Chip, Form, Input, Link, Modal, ModalBody, ModalContent, ModalHeader, useDisclosure } from "@heroui/react";
 import { Accordion, AccordionItem } from "@heroui/react";
 
 import AppNavBar from "@/components/ui/navbar";
@@ -48,7 +48,7 @@ function AddCourse() {
             } else {
                 setInfo({status: "fail", message: "An error occured!"});
             }
-        } catch(err) {
+        } catch {
             setInfo({status: "fail", message: "An error occured!"});
         } finally {
             setIsLoading(false);
@@ -59,7 +59,7 @@ function AddCourse() {
             <Button onPress={onOpen} className="text-white bg-[#3776AB]">Add Course</Button>
             <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
                 <ModalContent>
-                    {(onClose) => (
+                    {() => (
                         <>
                             <ModalHeader>Add Course</ModalHeader>
                             <ModalBody>
@@ -94,13 +94,11 @@ function AddCourse() {
 
 function CoursesAccordion() {
     const [courses, setCourses] = useState<Course[]>([]);
-    useEffect(() => {
-        async function fetchData() {
-            setCourses(await fetchCourses());
-        }
 
-        fetchData();
+    useEffect(() => {
+        fetchCourses().then((result) => {setCourses(result)});
     }, [])
+
     return (
         <div className="max-w-lg">
             <Accordion>
@@ -151,12 +149,9 @@ function EditCourse({course}: {course: Course}) {
                 body: JSON.stringify(data),
             });
 
-            if (res.ok) {
-                setInfo({status: "success", message: "Data Update Successful!"});
-            } else {
-                setInfo({status: "fail", message: "An error occured!"});
-            }
-        } catch(err) {
+            if (res.ok) setInfo({status: "success", message: "Data Update Successful!"});
+            else setInfo({status: "fail", message: "An error occured!"});
+        } catch {
             setInfo({status: "fail", message: "An error occured!"});
         } finally {
             setIsLoading(false);
@@ -167,7 +162,7 @@ function EditCourse({course}: {course: Course}) {
             <Button onPress={onOpen} size="sm" className="text-white bg-[#3776AB] max-w-20">Edit</Button>
             <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
                 <ModalContent>
-                    {(onClose) => (
+                    {() => (
                         <>
                             <ModalHeader>Edit Course</ModalHeader>
                             <ModalBody>
@@ -228,7 +223,7 @@ function AddCohort({ course_id }: { course_id: string }) {
             } else {
                 setInfo({status: "fail", message: "An error occured!"});
             }
-        } catch(err) {
+        } catch {
             setInfo({status: "fail", message: "An error occured!"});
         } finally {
             setIsLoading(false);
@@ -239,7 +234,7 @@ function AddCohort({ course_id }: { course_id: string }) {
             <Button onPress={onOpen} size="sm" className="text-white bg-[#3776AB] max-w-20">Add Cohort</Button>
             <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
                 <ModalContent>
-                    {(onClose) => (
+                    {() => (
                         <>
                             <ModalHeader>Add Cohort</ModalHeader>
                             <ModalBody>

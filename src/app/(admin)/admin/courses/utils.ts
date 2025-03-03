@@ -13,7 +13,7 @@ export async function fetchCourses() {
             const res_json = (await res.json()).data.courses;
             return res_json;
         } else return [];
-    } catch(err) {
+    } catch {
         return [];
     }
 }
