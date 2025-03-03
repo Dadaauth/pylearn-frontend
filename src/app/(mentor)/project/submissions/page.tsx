@@ -110,6 +110,16 @@ export default function Page() {
                         >
                             Refresh
                         </Button>
+                        {selectedProjectID != '' &&
+                            <Button
+                                className="bg-[#3776AB] text-white"
+                                as={Link}
+                                href={`/mentor/project/${selectedProjectID}`}
+                                size="sm"
+                            >
+                                View Project
+                            </Button>
+                        }
                     </div>
                     <ProjectSubmissionsTable data={studentsSubmissionData} />
                 </div>
