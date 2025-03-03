@@ -22,7 +22,6 @@ export default function Page() {
     useEffect(() => {
         async function fetchData() {
             const pjts = await retrieve_projects_with_submissions();
-            console.log(pjts);
             const projects = [];
             for (let i = 0; i < pjts.length; i++) {
                 const id = pjts[i].id;
@@ -153,7 +152,7 @@ function ProjectSubmissionsTable(props: {
                                 <TableCell>{data.project_title}</TableCell>
                                 <TableCell>{data.submission_date}</TableCell>
                                 <TableCell className="flex flex-row gap-4">
-                                    <Button as={Link} href={data.submission_file} size="sm" className="bg-[#3776AB] text-white px-2 py-1 rounded-md">View</Button>
+                                    <Button as={Link} href={data.submission_file} target="_blank" size="sm" className="bg-[#3776AB] text-white px-2 py-1 rounded-md">View</Button>
                                     <Button size="sm" onPress={() => gradeProjectHandler(data)} className="bg-[#3776AB] text-white px-2 py-1 rounded-md">Grade</Button>
                                 </TableCell>
                             </TableRow>
