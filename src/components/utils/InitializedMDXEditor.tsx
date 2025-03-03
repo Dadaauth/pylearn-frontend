@@ -5,8 +5,6 @@ import {
   linkPlugin,
   listsPlugin,
   tablePlugin,
-  codeBlockPlugin,
-  sandpackPlugin,
   linkDialogPlugin,
   quotePlugin,
   thematicBreakPlugin,
@@ -18,19 +16,39 @@ import {
   type MDXEditorMethods,
   type MDXEditorProps,
   BlockTypeSelect,
-  ChangeCodeMirrorLanguage,
   CodeToggle,
-  InsertCodeBlock,
   CreateLink,
   InsertTable,
-  InsertSandpack,
   InsertThematicBreak,
   ListsToggle,
-  ShowSandpackInfo
+  codeBlockPlugin,
+  ConditionalContents,
+  InsertCodeBlock,
+  InsertSandpack,
+  ChangeCodeMirrorLanguage,
+  ShowSandpackInfo,
+  SandpackConfig,
+  sandpackPlugin,
+  codeMirrorPlugin,
 } from '@mdxeditor/editor'
 import '@mdxeditor/editor/style.css'
 
-// Only import this to the next file
+
+const simpleSandpackConfig: SandpackConfig = {
+  defaultPreset: 'react',
+  presets: [
+    {
+      label: 'React',
+      name: 'react',
+      meta: 'live react',
+      sandpackTemplate: 'react',
+      sandpackTheme: 'light',
+      snippetFileName: '/App.js',
+      snippetLanguage: 'jsx',
+    }
+  ]
+}
+
 export default function InitializedMDXEditor({
   editorRef,
   ...props
@@ -38,7 +56,6 @@ export default function InitializedMDXEditor({
   return (
     <MDXEditor
       plugins={[
-        // Example Plugin Usage
         headingsPlugin(),
         listsPlugin(),
         quotePlugin(),
@@ -46,9 +63,10 @@ export default function InitializedMDXEditor({
         markdownShortcutPlugin(),
         linkPlugin(),
         tablePlugin(),
-        codeBlockPlugin(),
         linkDialogPlugin(),
-        // sandpackPlugin(),
+        codeBlockPlugin({ defaultCodeBlockLanguage: 'js' }),
+        sandpackPlugin({ sandpackConfig: simpleSandpackConfig }),
+        codeMirrorPlugin({ codeBlockLanguages: { js: 'JavaScript', css: 'CSS', python: 'Python', c: "C" } }),
         toolbarPlugin({
             toolbarClassName: 'my-classname',
             toolbarContents: () => (
@@ -57,15 +75,25 @@ export default function InitializedMDXEditor({
                 <UndoRedo />
                 <BoldItalicUnderlineToggles />
                 <BlockTypeSelect />
-                {/* <ChangeCodeMirrorLanguage /> */}
                 <CodeToggle />
                 <CreateLink />
-                <InsertCodeBlock />
                 <InsertTable />
-                <InsertSandpack />
                 <InsertThematicBreak />
                 <ListsToggle />
-                {/* <ShowSandpackInfo /> */}
+                <ConditionalContents
+                  options={[
+                    { when: (editor) => editor?.editorType === 'codeblock', contents: () => <ChangeCodeMirrorLanguage /> },
+                    { when: (editor) => editor?.editorType === 'sandpack', contents: () => <ShowSandpackInfo /> },
+                    {
+                      fallback: () => (
+                        <>
+                          <InsertCodeBlock />
+                          <InsertSandpack />
+                        </>
+                      )
+                    }
+                  ]}
+                />
               </>
             )
           })
