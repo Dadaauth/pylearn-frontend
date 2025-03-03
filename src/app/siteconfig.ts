@@ -6,7 +6,10 @@ export const siteconfig = {
         urls: {
             admin: {
                 pages: {
-                    courses: "/admin/courses"
+                    courses: "/admin/courses",
+                    project: {
+                        edit: "/admin/project"
+                    }
                 },
             },
             mentor_projectsubmissions_page: "/project/submissions",
