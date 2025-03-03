@@ -1,29 +1,13 @@
 "use client"
-import { useState, useEffect } from "react";
-import Cookies from "js-cookie";
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button, Select, SelectItem } from "@heroui/react";
+import { useState } from "react";
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button, Select, SelectItem, SharedSelection } from "@heroui/react";
 import { Check } from "@mui/icons-material";
 
-import { Mentors, Cohort } from "./definitions";
-import { fetchAllCohorts, fetchCohortsAssignedToMentor, fetchMentors } from "./utils";
+import { Cohort, Mentor, PageData } from "./definitions";
+import { fetchAPIv1 } from "@/utils/api";
 
 
-export function MentorsTable() {
-    const [mentors, setMentors] = useState<Mentors[]>([]);
-    const [cohorts, setCohorts] = useState<Cohort[]>([]);
-
-    useEffect(() => {
-        async function fetchData() {
-            const mtr = await fetchMentors();
-            if (mtr) setMentors(mtr);
-
-            const tmp_cohorts = await fetchAllCohorts();
-            if (tmp_cohorts) setCohorts(tmp_cohorts);
-        }
-
-        fetchData();
-    }, [])
-
+export function MentorsTable({ data }: { data: PageData }) {
     return (
         <div className="my-6">
             <Table aria-label="Mentors Table">
@@ -33,14 +17,14 @@ export function MentorsTable() {
                     <TableColumn>Assigned Cohorts</TableColumn>
                 </TableHeader>
                 <TableBody>
-                    {mentors.map((mentor, index) => (
-                        <TableRow key={index}>
+                    {data.mentors.map((mentor) => (
+                        <TableRow key={mentor.id}>
                             <TableCell>{mentor.first_name} {mentor.last_name}</TableCell>
                             <TableCell>{mentor.email}</TableCell>
                             <TableCell>
                                 <AssignedCohortsSelection
-                                    cohorts={cohorts}
-                                    mentor_id={mentor.id}
+                                    all_cohorts={data.cohorts}
+                                    mentor={mentor}
                                 />
                             </TableCell>
                         </TableRow>
@@ -52,47 +36,30 @@ export function MentorsTable() {
 }
 
 
-function AssignedCohortsSelection({mentor_id, cohorts}: {mentor_id: string, cohorts: Cohort[]}) {
-    const [cohortsAssigned, setCohortsAssigned] = useState<string[]>([]);
+function AssignedCohortsSelection({all_cohorts, mentor}: {all_cohorts: Cohort[], mentor: Mentor}) {
+    const [cohortsAssigned, setCohortsAssigned] = useState<string[]>(mentor.cohorts.map((cohort) => cohort.id));
     const [isLoading, setIsLoading] = useState(false);
     
-    useEffect(() => {
-        async function fetchData() {
-            const tmp_cohorts_assigned = await fetchCohortsAssignedToMentor(mentor_id);
-            if (tmp_cohorts_assigned) {
-                const tmp_list = [];
-                for (const tmp of tmp_cohorts_assigned) {
-                    tmp_list.push(tmp.id)
-                }
-                setCohortsAssigned(tmp_list);
-            }
-        }
 
-        fetchData();
-    }, []);
-
-    function setNewAssignedCohorts(selectedCohorts: any) {
+    function setNewAssignedCohorts(keys: SharedSelection) {
+        const selectedCohorts = new Set<string>(keys as unknown as string[]);
         setCohortsAssigned(Array.from(selectedCohorts));
     }
 
     async function updateAssignedCohorts() {
         setIsLoading(true);
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_V1}/cohort/assign_mentor`, {
-                method: "POST",
+            const res = await fetchAPIv1("/admin/mentors", undefined, {
+                method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${Cookies.get("access_token")}`
                 },
-                body: JSON.stringify({cohorts: cohortsAssigned, mentor_id}),
+                body: JSON.stringify({ cohorts: cohortsAssigned, mentor_id: mentor.id }),
             });
 
-            if (res.ok) {
-                console.log("Cohorts assigned successfully");
-            } else {
-                console.log("An error occured when assigning cohorts");
-            }
-        } catch(err) {
+            if (res.ok) console.log("Cohorts assigned successfully");
+            else console.log("An error occured when assigning cohorts");
+        } catch {
             console.log("An error occured when assigning cohorts");
         } finally {
             setIsLoading(false);
@@ -107,7 +74,7 @@ function AssignedCohortsSelection({mentor_id, cohorts}: {mentor_id: string, coho
                 selectionMode="multiple"
                 onSelectionChange={setNewAssignedCohorts}
             >
-                {cohorts.map((cohort) => (
+                {all_cohorts.map((cohort) => (
                     <SelectItem key={cohort.id}>{`${cohort.name} - ${cohort.course.title}`}</SelectItem>
                 ))}
             </Select>

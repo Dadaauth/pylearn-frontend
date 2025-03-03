@@ -1,3 +1,7 @@
+export interface PageData {
+    cohorts: Cohort[],
+    mentors: Mentor[],
+}
 
 
 export interface Cohort {
@@ -12,12 +16,13 @@ export interface Cohort {
     status: string,
 }
 
-export interface Mentors {
+export interface Mentor {
     id: string,
-    first_name: string;
-    last_name: string;
-    email: string;
-    status: string;
+    first_name: string,
+    last_name: string,
+    email: string,
+    status: string,
+    cohorts: Cohort[],
 }
 
 export interface CreateMentorModalProps {
