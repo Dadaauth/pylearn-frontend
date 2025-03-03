@@ -14,5 +14,6 @@ export interface Cohort {
     students: Array<Student>,
     course: {
         id: string,
+        title: "",
     },
 }

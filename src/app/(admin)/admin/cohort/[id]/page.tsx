@@ -20,6 +20,7 @@ export default function Page({
         students: [],
         course: {
             id: "",
+            title: "",
         }
     });
 
@@ -33,14 +34,14 @@ export default function Page({
         }
 
         fetchData();
-    }, [])
+    }, [params])
 
     return (
         <ProtectedAdmin>
             <AppNavBar />
             <div className="mx-6">
                 <div className="flex flex-row gap-4">
-                    <p className="font-medium text-xl">{cohort.name}</p>
+                    <p className="font-medium text-xl">{cohort.name} - {cohort.course.title}</p>
                     <Chip
                         color={cohort.status == "pending"? "warning": cohort.status == "in-progress"? "danger": "success"}
                         className="text-white"
@@ -86,7 +87,7 @@ function EditCohort({cohort}: {cohort: Cohort}) {
             } else {
                 setInfo({status: "fail", message: "An error occured!"});
             }
-        } catch(err) {
+        } catch {
             setInfo({status: "fail", message: "An error occured!"});
         } finally {
             setIsLoading(false);
@@ -97,7 +98,7 @@ function EditCohort({cohort}: {cohort: Cohort}) {
             <Button onPress={onOpen} size="sm" className="text-white bg-[#3776AB] max-w-20">Edit</Button>
             <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
                 <ModalContent>
-                    {(onClose) => (
+                    {() => (
                         <>
                             <ModalHeader>Edit Cohort</ModalHeader>
                             <ModalBody>
@@ -120,7 +121,7 @@ function EditCohort({cohort}: {cohort: Cohort}) {
                                     />
                                     <div className="mb-4">
                                         <label className="block text-gray-700 text-sm font-medium mb-2" htmlFor="status">Status</label>
-                                        <select name="status" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="status" required>
+                                        <select defaultValue={cohort.status} name="status" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="status" required>
                                             <option value="pending">pending</option>
                                             <option value="in-progress">in-progress</option>
                                             <option value="completed">completed</option>
@@ -146,12 +147,7 @@ function AddStudents({course_id, cohort_id}: {course_id: string, cohort_id: stri
     const [students, setStudents] = useState<Student[]>([]);
 
     useEffect(() => {
-        async function fetchData() {
-            const stds = await fetchStudentsWithNoCohortAssigned(course_id);
-            setStudents(stds);
-        }
-
-        fetchData();
+        fetchStudentsWithNoCohortAssigned(course_id).then((result) => {setStudents(result)})
     }, [course_id, cohort_id]);
 
     async function submitForm(e: React.FormEvent<HTMLFormElement>) {
@@ -169,12 +165,9 @@ function AddStudents({course_id, cohort_id}: {course_id: string, cohort_id: stri
                 body: formData,
             });
 
-            if (res.ok) {
-                setInfo({status: "success", message: "Student(s) Added Successfully!"});
-            } else {
-                setInfo({status: "fail", message: "An error occured!"});
-            }
-        } catch(err) {
+            if (res.ok) setInfo({status: "success", message: "Student(s) Added Successfully!"});
+            else setInfo({status: "fail", message: "An error occured!"});
+        } catch {
             setInfo({status: "fail", message: "An error occured!"});
         } finally {
             setIsLoading(false);
@@ -185,7 +178,7 @@ function AddStudents({course_id, cohort_id}: {course_id: string, cohort_id: stri
             <Button onPress={onOpen} size="sm" className="text-white bg-[#3776AB] max-w-20">Add Student</Button>
             <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
                 <ModalContent>
-                    {(onClose) => (
+                    {() => (
                         <>
                             <ModalHeader>Add Student(s)</ModalHeader>
                             <ModalBody>

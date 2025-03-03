@@ -11,7 +11,7 @@ export async function fetchCohortWithStudents(cohort_id: string) {
         if (res.ok) {
             return (await res.json()).data.cohort
         } else return false;
-    } catch(err) {
+    } catch {
         return false;
     }
 }
@@ -31,7 +31,7 @@ export async function fetchStudentsWithNoCohortAssigned(course_id: string) {
             console.log(res_json);
             return res_json;
         } else return [];
-    } catch (err) {
+    } catch {
         return [];
     }
 }
