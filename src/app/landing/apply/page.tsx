@@ -45,7 +45,7 @@ export default function Page() {
                 setInfo({status: 'fail', message: `An error occurred! \n
                     If it persists, please contact us at ${process.env.NEXT_PUBLIC_SUPPORT_EMAIL}`})
             }
-        } catch(err) {
+        } catch {
             setInfo({status: 'fail', message: `An error occurred! \n
                 If it persists, please contact us at ${process.env.NEXT_PUBLIC_SUPPORT_EMAIL}`})
         } finally {

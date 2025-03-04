@@ -7,14 +7,14 @@ export async function fetchCourses() {
 
         if (res.ok) {
             const res_json = (await res.json()).data.courses
-            for (let course of res_json) {
+            for (const course of res_json) {
                 delete course["cohorts"]
             }
             return res_json;
         } else {
             return [];
         }
-    } catch(err) {
+    } catch {
         return [];
     }
 }

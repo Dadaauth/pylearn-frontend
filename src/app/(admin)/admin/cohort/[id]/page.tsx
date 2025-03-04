@@ -18,6 +18,7 @@ export default function Page({
         name: "",
         status: "",
         students: [],
+        start_date: "",
         course: {
             id: "",
             title: "",
@@ -117,6 +118,13 @@ function EditCohort({cohort}: {cohort: Cohort}) {
                                         name="name"
                                         label="Name:"
                                         defaultValue={cohort.name}
+                                        isRequired
+                                    />
+                                    <Input
+                                        type="date"
+                                        name="start_date"
+                                        label="Starts:"
+                                        defaultValue={cohort.start_date}
                                         isRequired
                                     />
                                     <div className="mb-4">

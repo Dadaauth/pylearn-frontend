@@ -10,5 +10,6 @@ export interface Course {
     title: string,
     id: string,
     status: string,
+    communication_channel: string,
     cohorts: Cohort[]
 }

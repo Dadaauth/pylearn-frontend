@@ -79,6 +79,12 @@ function AddCourse() {
                                         label="Title:"
                                         isRequired
                                     />
+                                    <Input
+                                        type="text"
+                                        name="communication_channel"
+                                        label="Communication Channel Invite Link (e.g discord):"
+                                        isRequired
+                                    />
                                     <Button isLoading={isLoading} className="self-end bg-[#3776AB] text-white" type="submit">
                                         Add Course
                                     </Button>
@@ -183,6 +189,13 @@ function EditCourse({course}: {course: Course}) {
                                         defaultValue={course.title}
                                         isRequired
                                     />
+                                    <Input
+                                        type="text"
+                                        name="communication_channel"
+                                        label="Communication Channel Invite Link (e.g discord):"
+                                        defaultValue={course.communication_channel}
+                                        isRequired
+                                    />
                                     <Button isLoading={isLoading} className="self-end bg-[#3776AB] text-white" type="submit">
                                         Save
                                     </Button>
@@ -252,6 +265,12 @@ function AddCohort({ course_id }: { course_id: string }) {
                                         type="text"
                                         name="name"
                                         label="Name:"
+                                        isRequired
+                                    />
+                                    <Input
+                                        type="date"
+                                        name="start_date"
+                                        label="Starts:"
                                         isRequired
                                     />
                                     <Button isLoading={isLoading} className="self-end bg-[#3776AB] text-white" type="submit">

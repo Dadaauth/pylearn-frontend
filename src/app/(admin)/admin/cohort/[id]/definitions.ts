@@ -12,6 +12,7 @@ export interface Cohort {
     name: string,
     status: string,
     students: Array<Student>,
+    start_date: string,
     course: {
         id: string,
         title: "",
